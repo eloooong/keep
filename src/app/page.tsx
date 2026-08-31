@@ -1,6 +1,8 @@
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { KeysList } from "@/components/keys/KeysList";
+import { NewKeyForm } from "@/components/keys/NewKeyForm";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -11,6 +13,13 @@ export default async function DashboardPage() {
   if (!user) {
     redirect("/login");
   }
+
+  const { data: keys, error } = await supabase
+    .from("keys")
+    .select("id, name, value_encrypted, notes, category, tags")
+    .order("created_at", { ascending: false });
+
+  if (error) throw new Error(error.message);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -33,15 +42,31 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center px-6 py-16">
-        <div className="w-full max-w-md rounded-2xl border border-dashed border-black/[.15] p-10 text-center dark:border-white/[.15]">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-            No API keys yet
-          </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Add your first key.
-          </p>
-        </div>
+      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+        <section className="mb-10 rounded-2xl border border-black/[.08] p-6 dark:border-white/[.1]">
+          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            Add a key
+          </h2>
+          <NewKeyForm />
+        </section>
+
+        <section>
+          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+            Your keys
+          </h2>
+          {keys && keys.length > 0 ? (
+            <KeysList keys={keys} />
+          ) : (
+            <div className="rounded-2xl border border-dashed border-black/[.15] p-10 text-center dark:border-white/[.15]">
+              <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+                No API keys yet
+              </h3>
+              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                Add your first key.
+              </p>
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
