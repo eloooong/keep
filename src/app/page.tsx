@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { KeysList } from "@/components/keys/KeysList";
 import { NewKeyForm } from "@/components/keys/NewKeyForm";
 import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -23,6 +24,16 @@ export default async function DashboardPage() {
 
   if (error) throw new Error(error.message);
 
+  const { data: dismissedRows } = await supabase
+    .from("key_dismissals")
+    .select("key_id")
+    .eq("user_id", user.id);
+
+  const dismissedIds = new Set(
+    (dismissedRows ?? []).map((r) => r.key_id)
+  );
+  const bannerKeys = (keys ?? []).filter((k) => !dismissedIds.has(k.id));
+
   return (
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-black/[.08] px-6 py-4 dark:border-white/[.1]">
@@ -33,6 +44,7 @@ export default async function DashboardPage() {
           <span className="text-sm text-zinc-600 dark:text-zinc-400">
             {user.email}
           </span>
+          <ThemeToggle />
           <Link
             href="/activity"
             className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
@@ -51,7 +63,9 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
-        {keys && keys.length > 0 && <ExpiryBanner keys={keys} />}
+        {bannerKeys && bannerKeys.length > 0 && (
+          <ExpiryBanner keys={bannerKeys} />
+        )}
 
         <section className="mb-10 rounded-2xl border border-black/[.08] p-6 dark:border-white/[.1]">
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">

@@ -4,6 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { getActivity } from "@/app/actions/activity";
 import { ActivityList } from "@/components/activity/ActivityList";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default async function ActivityPage() {
   const supabase = await createClient();
@@ -27,6 +28,7 @@ export default async function ActivityPage() {
           <span className="text-sm text-zinc-600 dark:text-zinc-400">
             {user.email}
           </span>
+          <ThemeToggle />
           <Link
             href="/"
             className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"

@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { encryptValue, decryptValue } from "@/utils/crypto";
 
+const RATE_LIMIT = 20;
+const RATE_WINDOW_MS = 60_000;
+
 type KeyRow = {
   id: string;
   user_id: string;
@@ -198,16 +201,36 @@ async function loadKeyValue(
   const { permitted } = await isOwnerOrShare(supabase, id, user.id, "view");
   if (!permitted) throw new Error("Key not found");
 
+  const windowStart = new Date(Date.now() - RATE_WINDOW_MS).toISOString();
+
+  const { count } = await supabase
+    .from("audit_log")
+    .select("id", { count: "exact", head: true })
+    .eq("actor_id", user.id)
+    .in("action", ["view", "copy"])
+    .gt("created_at", windowStart);
+
+  if ((count ?? 0) >= RATE_LIMIT) {
+    throw new Error("Rate limit exceeded. Please try again in a minute.");
+  }
+
   const { data: rows, error } = await supabase
     .from("keys")
-    .select("value_encrypted")
+    .select("value_encrypted, expires_at")
     .eq("id", id)
     .limit(1);
 
   if (error) throw new Error(error.message);
   if (!rows?.[0]) throw new Error("Key not found");
 
-  return decryptValue(rows[0].value_encrypted);
+  const row = rows[0];
+  if (row.expires_at && new Date(row.expires_at) <= new Date()) {
+    throw new Error(
+      "This key has expired and can no longer be revealed or copied."
+    );
+  }
+
+  return decryptValue(row.value_encrypted);
 }
 
 export async function revealKey(id: string): Promise<string> {
@@ -252,4 +275,52 @@ export async function copyKey(id: string): Promise<string> {
   }
 
   return result;
+}
+
+export async function dismissKeyReminder(keyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await supabase.from("key_dismissals").upsert(
+    { key_id: keyId, user_id: user.id },
+    { onConflict: "key_id,user_id" }
+  );
+  revalidatePath("/");
+}
+
+export async function undismissKeyReminder(keyId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  await supabase
+    .from("key_dismissals")
+    .delete()
+    .eq("key_id", keyId)
+    .eq("user_id", user.id);
+  revalidatePath("/");
+}
+
+export async function dismissAllKeyReminders(keyIds: string[]) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) throw new Error("Unauthorized");
+
+  const dismissals = keyIds.map((keyId) => ({
+    key_id: keyId,
+    user_id: user.id,
+  }));
+
+  await supabase.from("key_dismissals").upsert(dismissals, {
+    onConflict: "key_id,user_id",
+    ignoreDuplicates: true,
+  });
+  revalidatePath("/");
 }

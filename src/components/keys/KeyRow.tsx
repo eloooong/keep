@@ -35,6 +35,8 @@ export function KeyRow({
   const [isDeleting, startDelete] = useTransition();
   const [isCopying, startCopy] = useTransition();
 
+  const expired = expiryStatus(expiresAt) === "expired";
+
   useEffect(() => {
     if (!copied) return;
     const timer = setTimeout(() => {
@@ -45,6 +47,7 @@ export function KeyRow({
   }, [copied]);
 
   function handleReveal() {
+    if (expired) return;
     if (revealed !== null) {
       setRevealed(null);
       return;
@@ -55,6 +58,7 @@ export function KeyRow({
   }
 
   function handleCopy() {
+    if (expired) return;
     startCopy(async () => {
       const plaintext = await copyKey(keyId);
       await navigator.clipboard.writeText(plaintext);
@@ -151,18 +155,18 @@ export function KeyRow({
         <button
           type="button"
           onClick={handleCopy}
-          disabled={isCopying}
+          disabled={expired || isCopying}
           className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
         >
-          {copied ? "Copied" : isCopying ? "Copying..." : "Copy"}
+          {expired ? "Expired" : copied ? "Copied" : isCopying ? "Copying..." : "Copy"}
         </button>
         <button
           type="button"
           onClick={handleReveal}
-          disabled={isRevealing}
+          disabled={expired || isRevealing}
           className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
         >
-          {revealed !== null ? "Hide" : isRevealing ? "Revealing..." : "Reveal"}
+          {expired ? "Expired" : revealed !== null ? "Hide" : isRevealing ? "Revealing..." : "Reveal"}
         </button>
         <button
           type="button"

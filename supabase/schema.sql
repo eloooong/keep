@@ -129,3 +129,36 @@ drop policy if exists "Sharee reads own shares" on public.key_shares;
 create policy "Sharee reads own shares"
   on public.key_shares for select
   using (user_id = auth.uid());
+
+-- Phase 6: Remaining polish
+-- Email reminder dedup
+create table if not exists public.email_reminders (
+  id uuid primary key default gen_random_uuid(),
+  key_id uuid not null references public.keys(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  sent_at timestamptz not null default now(),
+  unique (key_id, user_id)
+);
+alter table public.email_reminders enable row level security;
+drop policy if exists "Service role manages reminders" on public.email_reminders;
+create policy "Service role manages reminders"
+  on public.email_reminders for all
+  using (true) with check (true);
+
+-- Banner dismissals (per-user per-key)
+create table if not exists public.key_dismissals (
+  id uuid primary key default gen_random_uuid(),
+  key_id uuid not null references public.keys(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  dismissed_at timestamptz not null default now(),
+  unique (key_id, user_id)
+);
+alter table public.key_dismissals enable row level security;
+drop policy if exists "Users manage own dismissals" on public.key_dismissals;
+create policy "Users manage own dismissals"
+  on public.key_dismissals for all
+  using (auth.uid() = user_id) with check (auth.uid() = user_id);
+
+-- Rate-limit index
+create index if not exists audit_log_actor_action_idx
+  on public.audit_log (actor_id, action, created_at);
