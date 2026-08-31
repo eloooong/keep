@@ -3,6 +3,9 @@
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { useState } from "react";
+import { SplitText } from "@/components/react-bits/SplitText";
+import { Aurora } from "@/components/react-bits/Aurora";
+import { ShinyText } from "@/components/react-bits/ShinyText";
 
 export default function SignupPage() {
   const [email, setEmail] = useState("");
@@ -38,13 +41,13 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="flex flex-1 items-center justify-center px-4">
+    <Aurora className="flex flex-1 items-center justify-center px-4">
       <div className="w-full max-w-sm rounded-2xl border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.1] dark:bg-zinc-900">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Create account
+          <SplitText text="Create account" delay={100} stagger={0.04} />
         </h1>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Start saving your API keys securely.
+          <ShinyText text="Start saving your API keys securely." />
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
@@ -111,6 +114,6 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
-    </main>
+    </Aurora>
   );
 }

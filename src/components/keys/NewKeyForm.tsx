@@ -2,6 +2,8 @@
 
 import { useTransition } from "react";
 import { createKey } from "@/app/actions/keys";
+import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
+import { Magnet } from "@/components/react-bits/Magnet";
 
 export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
   const [isPending, startTransition] = useTransition();
@@ -16,7 +18,8 @@ export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
         });
       }}
     >
-      <div>
+      <AnimatedContent>
+        <div className="space-y-3">      <div>
         <label
           htmlFor="new-key-name"
           className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
@@ -109,13 +112,17 @@ export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
           className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
         />
       </div>
-      <button
-        type="submit"
-        disabled={isPending}
-        className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-      >
-        {isPending ? "Saving..." : "Add key"}
-      </button>
+      </div>
+      </AnimatedContent>
+      <Magnet active={!isPending}>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          {isPending ? "Saving..." : "Add key"}
+        </button>
+      </Magnet>
     </form>
   );
 }

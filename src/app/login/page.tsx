@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SplitText } from "@/components/react-bits/SplitText";
 import { Aurora } from "@/components/react-bits/Aurora";
+import { ShinyText } from "@/components/react-bits/ShinyText";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export default function LoginPage() {
           <SplitText text="Log in" delay={100} stagger={0.04} />
         </h1>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          Welcome back. Enter your credentials to continue.
+          <ShinyText text="Welcome back. Enter your credentials to continue." />
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">

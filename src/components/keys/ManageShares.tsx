@@ -8,6 +8,9 @@ import {
   listShares,
   type ShareListItem,
 } from "@/app/actions/shares";
+import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
+import { AnimatedList } from "@/components/react-bits/AnimatedList";
+import { Magnet } from "@/components/react-bits/Magnet";
 
 export function ManageShares({ keyId }: { keyId: string }) {
   const [shares, setShares] = useState<ShareListItem[]>([]);
@@ -68,30 +71,34 @@ export function ManageShares({ keyId }: { keyId: string }) {
       <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
         Share with others
       </p>
-      <form action={handleInvite} className="flex gap-2">
-        <input
-          name="email"
-          type="email"
-          required
-          placeholder="user@example.com"
-          className="flex-1 rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-        <select
-          name="permission"
-          defaultValue="view"
-          className="rounded-lg border border-black/[.08] bg-transparent px-2 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        >
-          <option value="view">View</option>
-          <option value="edit">Edit</option>
-        </select>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-        >
-          {isPending ? "Adding..." : "Add"}
-        </button>
-      </form>
+      <AnimatedContent>
+        <form action={handleInvite} className="flex gap-2">
+          <input
+            name="email"
+            type="email"
+            required
+            placeholder="user@example.com"
+            className="flex-1 rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+          <select
+            name="permission"
+            defaultValue="view"
+            className="rounded-lg border border-black/[.08] bg-transparent px-2 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          >
+            <option value="view">View</option>
+            <option value="edit">Edit</option>
+          </select>
+          <Magnet active={!isPending}>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            >
+              {isPending ? "Adding..." : "Add"}
+            </button>
+          </Magnet>
+        </form>
+      </AnimatedContent>
 
       {error && (
         <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
@@ -105,7 +112,8 @@ export function ManageShares({ keyId }: { keyId: string }) {
         </p>
       ) : (
         <div className="space-y-2">
-          {shares.map((share) => (
+          <AnimatedList>
+            {shares.map((share) => (
             <div
               key={share.id}
               className="flex items-center justify-between gap-3 rounded-lg border border-black/[.08] px-3 py-2 dark:border-white/[.1]"
@@ -138,6 +146,7 @@ export function ManageShares({ keyId }: { keyId: string }) {
               </div>
             </div>
           ))}
+          </AnimatedList>
         </div>
       )}
     </div>

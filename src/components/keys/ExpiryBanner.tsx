@@ -7,6 +7,7 @@ import {
   dismissAllKeyReminders,
 } from "@/app/actions/keys";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
+import { AnimatedList } from "@/components/react-bits/AnimatedList";
 
 type ExpiryBannerProps = {
   keys: { id: string; name: string; expires_at: string | null }[];
@@ -59,10 +60,11 @@ export function ExpiryBanner({ keys }: ExpiryBannerProps) {
         </button>
       </div>
       <ul className="space-y-1">
-        {flagged.map((k) => {
-          const status = expiryStatus(k.expires_at);
-          const label = formatExpiry(k.expires_at);
-          return (
+        <AnimatedList>
+          {flagged.map((k) => {
+            const status = expiryStatus(k.expires_at);
+            const label = formatExpiry(k.expires_at);
+            return (
             <li key={k.id} className="flex items-center gap-2 text-sm">
               <span
                 className={`inline-block h-2 w-2 rounded-full ${
@@ -92,7 +94,8 @@ export function ExpiryBanner({ keys }: ExpiryBannerProps) {
               </button>
             </li>
           );
-        })}
+          })}
+        </AnimatedList>
       </ul>
     </div>
   );

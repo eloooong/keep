@@ -6,6 +6,7 @@ import { EditKeyForm } from "@/components/keys/EditKeyForm";
 import { ManageShares } from "@/components/keys/ManageShares";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { ClickSpark } from "@/components/react-bits/ClickSpark";
+import { SpotlightCard } from "@/components/react-bits/SpotlightCard";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -112,7 +113,8 @@ export function KeyRow({
   }
 
   return (
-    <div className="flex items-center justify-between gap-4 rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
+    <SpotlightCard className="overflow-hidden rounded-xl">
+      <div className="flex items-center justify-between gap-4 rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium text-zinc-900 dark:text-zinc-50">{name}</p>
@@ -215,6 +217,7 @@ export function KeyRow({
           </>
         )}
       </div>
-    </div>
+      </div>
+    </SpotlightCard>
   );
 }

@@ -6,6 +6,7 @@ import { KeysList } from "@/components/keys/KeysList";
 import { NewKeyForm } from "@/components/keys/NewKeyForm";
 import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { KeyCount } from "@/components/keys/KeyCount";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -76,7 +77,7 @@ export default async function DashboardPage() {
 
         <section>
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Your keys
+            Your keys (<KeyCount value={keys ? keys.length : 0} />)
           </h2>
           {keys && keys.length > 0 ? (
             <KeysList keys={keys} currentUserId={user.id} />
