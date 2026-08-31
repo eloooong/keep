@@ -51,6 +51,7 @@ export async function createShare(keyId: string, formData: FormData) {
   const { error: upsertError } = await supabase.from("key_shares").upsert(
     {
       key_id: keyId,
+      owner_id: user.id,
       user_id: sharee.id,
       permission,
       updated_at: new Date().toISOString(),

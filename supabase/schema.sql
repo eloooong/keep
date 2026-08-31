@@ -66,8 +66,8 @@ alter table public.key_shares enable row level security;
 drop policy if exists "Owner manages shares" on public.key_shares;
 create policy "Owner manages shares"
   on public.key_shares for all
-  using (exists (select 1 from public.keys k where k.id = key_id and k.user_id = auth.uid()))
-  with check (exists (select 1 from public.keys k where k.id = key_id and k.user_id = auth.uid()));
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
 drop policy if exists "Sharee reads own shares" on public.key_shares;
 create policy "Sharee reads own shares"
   on public.key_shares for select
@@ -111,3 +111,21 @@ create index if not exists audit_log_key_id_idx on public.audit_log (key_id);
 
 -- Phase 5: Key expiry
 alter table public.keys add column if not exists expires_at timestamptz;
+
+-- Phase 5b: Fix circular RLS recursion between keys <-> key_shares.
+-- Denormalize owner_id onto key_shares so the "Owner manages shares" policy
+-- no longer subqueries keys (which recursed through the sharee read policy).
+alter table public.key_shares add column if not exists owner_id uuid references auth.users(id) on delete cascade;
+update public.key_shares as s
+  set owner_id = k.user_id
+  from public.keys as k
+  where k.id = s.key_id and s.owner_id is null;
+drop policy if exists "Owner manages shares" on public.key_shares;
+create policy "Owner manages shares"
+  on public.key_shares for all
+  using (owner_id = auth.uid())
+  with check (owner_id = auth.uid());
+drop policy if exists "Sharee reads own shares" on public.key_shares;
+create policy "Sharee reads own shares"
+  on public.key_shares for select
+  using (user_id = auth.uid());
