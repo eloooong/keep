@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { revealKey, deleteKey, copyKey } from "@/app/actions/keys";
 import { EditKeyForm } from "@/components/keys/EditKeyForm";
+import { ManageShares } from "@/components/keys/ManageShares";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -13,6 +14,7 @@ export function KeyRow({
   category,
   tags,
   maskedValue,
+  isOwner,
 }: {
   keyId: string;
   name: string;
@@ -20,10 +22,12 @@ export function KeyRow({
   category: string | null;
   tags: string[];
   maskedValue: string;
+  isOwner: boolean;
 }) {
   const [revealed, setRevealed] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showShares, setShowShares] = useState(false);
   const [isRevealing, startReveal] = useTransition();
   const [isDeleting, startDelete] = useTransition();
   const [isCopying, startCopy] = useTransition();
@@ -78,11 +82,34 @@ export function KeyRow({
     );
   }
 
+  if (showShares) {
+    return (
+      <div className="rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
+        <div className="mb-3 flex items-center justify-between">
+          <p className="font-medium text-zinc-900 dark:text-zinc-50">{name}</p>
+          <button
+            type="button"
+            onClick={() => setShowShares(false)}
+            className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+          >
+            Close
+          </button>
+        </div>
+        <ManageShares keyId={keyId} />
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium text-zinc-900 dark:text-zinc-50">{name}</p>
+          {!isOwner && (
+            <span className="rounded-md bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+              Shared
+            </span>
+          )}
           {category ? (
             <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
               {category}
@@ -130,14 +157,25 @@ export function KeyRow({
         >
           Edit
         </button>
-        <button
-          type="button"
-          onClick={handleDelete}
-          disabled={isDeleting}
-          className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-white/[.15] dark:text-red-400 dark:hover:bg-red-950"
-        >
-          {isDeleting ? "Deleting..." : "Delete"}
-        </button>
+        {isOwner && (
+          <>
+            <button
+              type="button"
+              onClick={() => setShowShares(true)}
+              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+            >
+              Share
+            </button>
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-white/[.15] dark:text-red-400 dark:hover:bg-red-950"
+            >
+              {isDeleting ? "Deleting..." : "Delete"}
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

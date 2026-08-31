@@ -6,6 +6,7 @@ import { KeysToolbar } from "@/components/keys/KeysToolbar";
 
 type KeyItem = {
   id: string;
+  user_id: string;
   name: string;
   value_encrypted: string;
   notes: string | null;
@@ -13,7 +14,13 @@ type KeyItem = {
   tags: string[];
 };
 
-export function KeysList({ keys }: { keys: KeyItem[] }) {
+export function KeysList({
+  keys,
+  currentUserId,
+}: {
+  keys: KeyItem[];
+  currentUserId: string;
+}) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("");
   const [tag, setTag] = useState("");
@@ -67,17 +74,21 @@ export function KeysList({ keys }: { keys: KeyItem[] }) {
       />
       {filtered.length > 0 ? (
         <div className="space-y-3">
-          {filtered.map((key) => (
-            <KeyRow
-              key={key.id}
-              keyId={key.id}
-              name={key.name}
-              notes={key.notes}
-              category={key.category}
-              tags={key.tags}
-              maskedValue={`****${key.value_encrypted.slice(-4)}`}
-            />
-          ))}
+          {filtered.map((key) => {
+            const isOwner = key.user_id === currentUserId;
+            return (
+              <KeyRow
+                key={key.id}
+                keyId={key.id}
+                name={key.name}
+                notes={key.notes}
+                category={key.category}
+                tags={key.tags}
+                maskedValue={`****${key.value_encrypted.slice(-4)}`}
+                isOwner={isOwner}
+              />
+            );
+          })}
         </div>
       ) : hasFilters ? (
         <div className="rounded-2xl border border-dashed border-black/[.15] p-10 text-center dark:border-white/[.15]">

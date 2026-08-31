@@ -16,6 +16,52 @@ type KeyRow = {
   updated_at: string;
 };
 
+type AuthzResult = {
+  permitted: boolean;
+  isOwner: boolean;
+  permission: "view" | "edit" | null;
+};
+
+async function isOwnerOrShare(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  keyId: string,
+  userId: string,
+  requiredPermission?: "view" | "edit"
+): Promise<AuthzResult> {
+  const { data: rows, error } = await supabase
+    .from("keys")
+    .select("user_id")
+    .eq("id", keyId)
+    .limit(1);
+
+  if (error) throw new Error(error.message);
+
+  const row = rows?.[0];
+  if (!row) return { permitted: false, isOwner: false, permission: null };
+
+  if (row.user_id === userId) {
+    return { permitted: true, isOwner: true, permission: "edit" };
+  }
+
+  const { data: share, error: shareError } = await supabase
+    .from("key_shares")
+    .select("permission")
+    .eq("key_id", keyId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (shareError) throw new Error(shareError.message);
+  if (!share) return { permitted: false, isOwner: false, permission: null };
+
+  const sharePerm = share.permission as "view" | "edit";
+
+  if (requiredPermission === "edit" && sharePerm !== "edit") {
+    return { permitted: false, isOwner: false, permission: sharePerm };
+  }
+
+  return { permitted: true, isOwner: false, permission: sharePerm };
+}
+
 function parseTags(formData: FormData): string[] {
   const raw = String(formData.get("tags") ?? "");
   return raw
@@ -68,6 +114,9 @@ export async function updateKey(id: string, formData: FormData) {
 
   if (!user) throw new Error("Unauthorized");
 
+  const { permitted } = await isOwnerOrShare(supabase, id, user.id, "edit");
+  if (!permitted) throw new Error("Key not found");
+
   const name = String(formData.get("name") ?? "").trim();
   const value = String(formData.get("value") ?? "");
   const notes = String(formData.get("notes") ?? "").trim() || null;
@@ -75,17 +124,6 @@ export async function updateKey(id: string, formData: FormData) {
   const tags = parseTags(formData);
 
   if (!name) throw new Error("Name is required");
-
-  const { data: rows, error: fetchError } = await supabase
-    .from("keys")
-    .select("*")
-    .eq("id", id)
-    .limit(1);
-
-  if (fetchError) throw new Error(fetchError.message);
-
-  const row: KeyRow | undefined = rows?.[0];
-  if (!row || row.user_id !== user.id) throw new Error("Key not found");
 
   const updates: Partial<KeyRow> = {
     name,
@@ -105,6 +143,16 @@ export async function updateKey(id: string, formData: FormData) {
     .eq("id", id);
 
   if (updateError) throw new Error(updateError.message);
+
+  try {
+    await supabase.from("audit_log").insert({
+      key_id: id,
+      actor_id: user.id,
+      action: "edit",
+    });
+  } catch {
+    // best-effort audit log
+  }
 
   revalidatePath("/");
 }
@@ -134,26 +182,61 @@ async function loadKeyValue(
 
   if (!user) throw new Error("Unauthorized");
 
+  const { permitted } = await isOwnerOrShare(supabase, id, user.id, "view");
+  if (!permitted) throw new Error("Key not found");
+
   const { data: rows, error } = await supabase
     .from("keys")
-    .select("*")
+    .select("value_encrypted")
     .eq("id", id)
     .limit(1);
 
   if (error) throw new Error(error.message);
+  if (!rows?.[0]) throw new Error("Key not found");
 
-  const row: KeyRow | undefined = rows?.[0];
-  if (!row || row.user_id !== user.id) throw new Error("Key not found");
-
-  return decryptValue(row.value_encrypted);
+  return decryptValue(rows[0].value_encrypted);
 }
 
 export async function revealKey(id: string): Promise<string> {
   const supabase = await createClient();
-  return loadKeyValue(supabase, id);
+  const result = await loadKeyValue(supabase, id);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    try {
+      await supabase.from("audit_log").insert({
+        key_id: id,
+        actor_id: user.id,
+        action: "view",
+      });
+    } catch {
+      // best-effort audit log
+    }
+  }
+
+  return result;
 }
 
 export async function copyKey(id: string): Promise<string> {
   const supabase = await createClient();
-  return loadKeyValue(supabase, id);
+  const result = await loadKeyValue(supabase, id);
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (user) {
+    try {
+      await supabase.from("audit_log").insert({
+        key_id: id,
+        actor_id: user.id,
+        action: "copy",
+      });
+    } catch {
+      // best-effort audit log
+    }
+  }
+
+  return result;
 }

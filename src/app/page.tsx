@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
   const { data: keys, error } = await supabase
     .from("keys")
-    .select("id, name, value_encrypted, notes, category, tags")
+    .select("id, name, value_encrypted, notes, category, tags, user_id")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -55,7 +55,7 @@ export default async function DashboardPage() {
             Your keys
           </h2>
           {keys && keys.length > 0 ? (
-            <KeysList keys={keys} />
+            <KeysList keys={keys} currentUserId={user.id} />
           ) : (
             <div className="rounded-2xl border border-dashed border-black/[.15] p-10 text-center dark:border-white/[.15]">
               <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
