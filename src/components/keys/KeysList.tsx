@@ -12,6 +12,7 @@ type KeyItem = {
   notes: string | null;
   category: string | null;
   tags: string[];
+  expires_at: string | null;
 };
 
 export function KeysList({
@@ -84,6 +85,7 @@ export function KeysList({
                 notes={key.notes}
                 category={key.category}
                 tags={key.tags}
+                expiresAt={key.expires_at}
                 maskedValue={`****${key.value_encrypted.slice(-4)}`}
                 isOwner={isOwner}
               />

@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { revealKey, deleteKey, copyKey } from "@/app/actions/keys";
 import { EditKeyForm } from "@/components/keys/EditKeyForm";
 import { ManageShares } from "@/components/keys/ManageShares";
+import { expiryStatus, formatExpiry } from "@/utils/expiry";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -13,6 +14,7 @@ export function KeyRow({
   notes,
   category,
   tags,
+  expiresAt,
   maskedValue,
   isOwner,
 }: {
@@ -21,6 +23,7 @@ export function KeyRow({
   notes: string | null;
   category: string | null;
   tags: string[];
+  expiresAt: string | null;
   maskedValue: string;
   isOwner: boolean;
 }) {
@@ -75,6 +78,7 @@ export function KeyRow({
           notes={notes}
           category={category}
           tags={tags}
+          expiresAt={expiresAt}
           onDone={() => setEditing(false)}
           onCancel={() => setEditing(false)}
         />
@@ -108,6 +112,16 @@ export function KeyRow({
           {!isOwner && (
             <span className="rounded-md bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900 dark:text-violet-300">
               Shared
+            </span>
+          )}
+          {expiryStatus(expiresAt) === "expired" && (
+            <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
+              Expired {formatExpiry(expiresAt)}
+            </span>
+          )}
+          {expiryStatus(expiresAt) === "soon" && (
+            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+              Expires {formatExpiry(expiresAt)}
             </span>
           )}
           {category ? (

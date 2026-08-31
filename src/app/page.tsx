@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { KeysList } from "@/components/keys/KeysList";
 import { NewKeyForm } from "@/components/keys/NewKeyForm";
+import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -16,7 +18,7 @@ export default async function DashboardPage() {
 
   const { data: keys, error } = await supabase
     .from("keys")
-    .select("id, name, value_encrypted, notes, category, tags, user_id")
+    .select("id, name, value_encrypted, notes, category, tags, expires_at, user_id")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);
@@ -31,6 +33,12 @@ export default async function DashboardPage() {
           <span className="text-sm text-zinc-600 dark:text-zinc-400">
             {user.email}
           </span>
+          <Link
+            href="/activity"
+            className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+          >
+            Activity
+          </Link>
           <form action={signOut}>
             <button
               type="submit"
@@ -43,6 +51,8 @@ export default async function DashboardPage() {
       </header>
 
       <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+        {keys && keys.length > 0 && <ExpiryBanner keys={keys} />}
+
         <section className="mb-10 rounded-2xl border border-black/[.08] p-6 dark:border-white/[.1]">
           <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
             Add a key

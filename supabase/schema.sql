@@ -108,3 +108,6 @@ create policy "Edit sharees can update"
 create index if not exists key_shares_key_id_idx on public.key_shares (key_id);
 create index if not exists key_shares_user_id_idx on public.key_shares (user_id);
 create index if not exists audit_log_key_id_idx on public.audit_log (key_id);
+
+-- Phase 5: Key expiry
+alter table public.keys add column if not exists expires_at timestamptz;

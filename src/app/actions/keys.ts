@@ -12,6 +12,7 @@ type KeyRow = {
   notes: string | null;
   category: string | null;
   tags: string[];
+  expires_at: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -70,6 +71,14 @@ function parseTags(formData: FormData): string[] {
     .filter((tag) => tag.length > 0);
 }
 
+function parseExpiry(formData: FormData): string | null {
+  const raw = String(formData.get("expires_at") ?? "").trim();
+  if (!raw) return null;
+  const d = new Date(raw + "T00:00:00");
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
 export async function createKey(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -83,6 +92,7 @@ export async function createKey(formData: FormData) {
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const category = String(formData.get("category") ?? "").trim() || null;
   const tags = parseTags(formData);
+  const expires_at = parseExpiry(formData);
 
   if (!name) throw new Error("Name is required");
   if (!value) throw new Error("Value is required");
@@ -97,6 +107,7 @@ export async function createKey(formData: FormData) {
     notes,
     category,
     tags,
+    expires_at,
     created_at: now,
     updated_at: now,
   });
@@ -122,6 +133,7 @@ export async function updateKey(id: string, formData: FormData) {
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const category = String(formData.get("category") ?? "").trim() || null;
   const tags = parseTags(formData);
+  const expires_at = parseExpiry(formData);
 
   if (!name) throw new Error("Name is required");
 
@@ -130,6 +142,7 @@ export async function updateKey(id: string, formData: FormData) {
     notes,
     category,
     tags,
+    expires_at,
     updated_at: new Date().toISOString(),
   };
 

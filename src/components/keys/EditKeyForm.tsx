@@ -9,6 +9,7 @@ export function EditKeyForm({
   notes,
   category,
   tags,
+  expiresAt,
   onDone,
   onCancel,
 }: {
@@ -17,6 +18,7 @@ export function EditKeyForm({
   notes: string | null;
   category: string | null;
   tags: string[];
+  expiresAt: string | null;
   onDone: () => void;
   onCancel: () => void;
 }) {
@@ -111,6 +113,24 @@ export function EditKeyForm({
           name="tags"
           type="text"
           defaultValue={tags.join(", ")}
+          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+        />
+      </div>
+      <div>
+        <label
+          htmlFor={`edit-${keyId}-expires`}
+          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+        >
+          Expires{" "}
+          <span className="text-zinc-400 dark:text-zinc-500">
+            (leave blank to clear)
+          </span>
+        </label>
+        <input
+          id={`edit-${keyId}-expires`}
+          name="expires_at"
+          type="date"
+          defaultValue={expiresAt ? expiresAt.slice(0, 10) : ""}
           className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
         />
       </div>
