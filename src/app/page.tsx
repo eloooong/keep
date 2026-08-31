@@ -19,7 +19,7 @@ export default async function DashboardPage() {
 
   const { data: keys, error } = await supabase
     .from("keys")
-    .select("id, name, value_encrypted, notes, category, tags, expires_at, user_id")
+    .select("id, name, value_encrypted, notes, category, tags, expires_at, user_id, last_viewed_at")
     .order("created_at", { ascending: false });
 
   if (error) throw new Error(error.message);

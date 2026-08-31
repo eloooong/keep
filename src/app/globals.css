@@ -24,3 +24,30 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(5%, -5%) rotate(2deg);
+  }
+  50% {
+    transform: translate(-3%, 3%) rotate(-1deg);
+  }
+  75% {
+    transform: translate(3%, 5%) rotate(1.5deg);
+  }
+}
+
+@keyframes click-spark-fade {
+  0% {
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(calc(-1 * var(--spark-radius)));
+    opacity: 0;
+  }
+}

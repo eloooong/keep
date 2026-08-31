@@ -5,6 +5,7 @@ import { revealKey, deleteKey, copyKey } from "@/app/actions/keys";
 import { EditKeyForm } from "@/components/keys/EditKeyForm";
 import { ManageShares } from "@/components/keys/ManageShares";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
+import { ClickSpark } from "@/components/react-bits/ClickSpark";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -15,6 +16,7 @@ export function KeyRow({
   category,
   tags,
   expiresAt,
+  lastViewedAt,
   maskedValue,
   isOwner,
 }: {
@@ -24,6 +26,7 @@ export function KeyRow({
   category: string | null;
   tags: string[];
   expiresAt: string | null;
+  lastViewedAt: string | null;
   maskedValue: string;
   isOwner: boolean;
 }) {
@@ -150,16 +153,33 @@ export function KeyRow({
         <p className="mt-1 font-mono text-sm text-zinc-500 dark:text-zinc-400">
           {revealed ?? maskedValue}
         </p>
+        {lastViewedAt ? (
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+            Last viewed{" "}
+            {new Date(lastViewedAt).toLocaleDateString(undefined, {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            })}
+          </p>
+        ) : null}
       </div>
       <div className="flex flex-shrink-0 items-center gap-2">
-        <button
-          type="button"
-          onClick={handleCopy}
-          disabled={expired || isCopying}
-          className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+        <ClickSpark
+          sparkColor="rgb(99 102 241)"
+          sparkCount={8}
+          sparkRadius={18}
+          className=""
         >
-          {expired ? "Expired" : copied ? "Copied" : isCopying ? "Copying..." : "Copy"}
-        </button>
+          <button
+            type="button"
+            onClick={handleCopy}
+            disabled={expired || isCopying}
+            className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+          >
+            {expired ? "Expired" : copied ? "Copied" : isCopying ? "Copying..." : "Copy"}
+          </button>
+        </ClickSpark>
         <button
           type="button"
           onClick={handleReveal}

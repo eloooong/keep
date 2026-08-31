@@ -162,3 +162,7 @@ create policy "Users manage own dismissals"
 -- Rate-limit index
 create index if not exists audit_log_actor_action_idx
   on public.audit_log (actor_id, action, created_at);
+
+-- Phase 7: last viewed tracking
+alter table public.keys add column if not exists last_viewed_at timestamptz;
+create index if not exists keys_last_viewed_at_idx on public.keys (last_viewed_at);

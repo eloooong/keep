@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { KeyRow } from "@/components/keys/KeyRow";
 import { KeysToolbar } from "@/components/keys/KeysToolbar";
+import { AnimatedList } from "@/components/react-bits/AnimatedList";
 
 type KeyItem = {
   id: string;
@@ -13,6 +14,7 @@ type KeyItem = {
   category: string | null;
   tags: string[];
   expires_at: string | null;
+  last_viewed_at: string | null;
 };
 
 export function KeysList({
@@ -74,7 +76,7 @@ export function KeysList({
         tags={tags}
       />
       {filtered.length > 0 ? (
-        <div className="space-y-3">
+        <AnimatedList className="space-y-3" staggerDelay={40}>
           {filtered.map((key) => {
             const isOwner = key.user_id === currentUserId;
             return (
@@ -86,12 +88,13 @@ export function KeysList({
                 category={key.category}
                 tags={key.tags}
                 expiresAt={key.expires_at}
+                lastViewedAt={key.last_viewed_at}
                 maskedValue={`****${key.value_encrypted.slice(-4)}`}
                 isOwner={isOwner}
               />
             );
           })}
-        </div>
+        </AnimatedList>
       ) : hasFilters ? (
         <div className="rounded-2xl border border-dashed border-black/[.15] p-10 text-center dark:border-white/[.15]">
           <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">

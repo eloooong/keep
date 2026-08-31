@@ -250,6 +250,14 @@ export async function revealKey(id: string): Promise<string> {
     } catch {
       // best-effort audit log
     }
+    try {
+      await supabase
+        .from("keys")
+        .update({ last_viewed_at: new Date().toISOString() })
+        .eq("id", id);
+    } catch {
+      // best-effort last_viewed_at update
+    }
   }
 
   return result;
