@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "API Key Saver",
-  description: "Securely store and manage your API keys.",
+  title: "Keep",
+  description: "Securely store, share, and expiry-manage your API keys.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

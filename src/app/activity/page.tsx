@@ -24,7 +24,7 @@ export default async function ActivityPage() {
     <div className="flex flex-1 flex-col">
       <header className="flex items-center justify-between border-b border-black/[.08] px-6 py-4 dark:border-white/[.1]">
         <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-          API Key Saver
+          Keep
         </span>
         <div className="flex items-center gap-4">
           <span className="text-sm text-zinc-600 dark:text-zinc-400">

@@ -88,7 +88,7 @@ export async function GET(request: Request) {
       Go to Dashboard
     </a>
   </p>
-  <p style="margin-top: 24px; font-size: 12px; color: #737373;">This is an automated reminder from API Key Saver.</p>
+  <p style="margin-top: 24px; font-size: 12px; color: #737373;">This is an automated reminder from Keep.</p>
 </body>
 </html>`;
 
