@@ -6,7 +6,8 @@ import { getActivity } from "@/app/actions/activity";
 import { ActivityList } from "@/components/activity/ActivityList";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { IconButton } from "@/components/ui/IconButton";
-import { LogOut } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Logout03Icon } from "@hugeicons/core-free-icons";
 
 export default async function ActivityPage() {
   const supabase = await createClient();
@@ -39,7 +40,7 @@ export default async function ActivityPage() {
           </Link>
           <form action={signOut}>
             <IconButton
-              icon={<LogOut size={16} />}
+              icon={<HugeiconsIcon icon={Logout03Icon} size={16} />}
               ariaLabel="Log out"
               type="submit"
             />

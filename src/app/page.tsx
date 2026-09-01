@@ -8,7 +8,8 @@ import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyCount } from "@/components/keys/KeyCount";
 import { IconButton } from "@/components/ui/IconButton";
-import { LogOut } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Logout03Icon } from "@hugeicons/core-free-icons";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -56,7 +57,7 @@ export default async function DashboardPage() {
           </Link>
           <form action={signOut}>
             <IconButton
-              icon={<LogOut size={16} />}
+              icon={<HugeiconsIcon icon={Logout03Icon} size={16} />}
               ariaLabel="Log out"
               type="submit"
             />
@@ -64,7 +65,7 @@ export default async function DashboardPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-2xl flex-1 px-6 py-10">
+      <main className="mx-auto w-full max-w-5xl flex-1 px-6 py-10">
         {bannerKeys && bannerKeys.length > 0 && (
           <ExpiryBanner keys={bannerKeys} />
         )}

@@ -3,22 +3,27 @@
 import { SplitText } from "@/components/react-bits/SplitText";
 import { GradientWaves } from "@/components/react-bits/GradientWaves";
 import { ShinyText } from "@/components/react-bits/ShinyText";
-import { Lock, Share2, Clock } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  LockIcon,
+  Share01Icon,
+  Clock01Icon,
+} from "@hugeicons/core-free-icons";
 import { LoginCard } from "./login-card";
 
 const valueProps = [
   {
-    icon: Lock,
+    icon: LockIcon,
     title: "Encrypted storage",
     description: "Your keys are encrypted before they ever touch storage.",
   },
   {
-    icon: Share2,
+    icon: Share01Icon,
     title: "Secure sharing",
     description: "Share access with your team without exposing secrets.",
   },
   {
-    icon: Clock,
+    icon: Clock01Icon,
     title: "Expiry reminders",
     description: "Get notified before a key expires, every time.",
   },
@@ -44,7 +49,7 @@ export default function LoginPage() {
             {valueProps.map(({ icon: Icon, title, description }) => (
               <li key={title} className="flex items-start gap-3">
                 <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-black/[.08] bg-white text-zinc-900 dark:border-white/[.1] dark:bg-zinc-900 dark:text-zinc-50">
-                  <Icon size={18} />
+                  <HugeiconsIcon icon={Icon} size={18} />
                 </span>
                 <span>
                   <span className="block font-medium text-zinc-900 dark:text-zinc-50">

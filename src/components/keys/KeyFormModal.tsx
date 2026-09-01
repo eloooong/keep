@@ -4,7 +4,8 @@ import { type ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
 import { IconButton } from "@/components/ui/IconButton";
-import { X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 export function KeyFormModal({
   open,
@@ -79,7 +80,7 @@ export function KeyFormModal({
               Add a key
             </h2>
             <IconButton
-              icon={<X size={16} />}
+              icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
               ariaLabel="Close"
               onClick={onClose}
             />

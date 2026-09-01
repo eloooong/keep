@@ -9,7 +9,8 @@ import {
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
 import { IconButton } from "@/components/ui/IconButton";
-import { X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon } from "@hugeicons/core-free-icons";
 
 type ExpiryBannerProps = {
   keys: { id: string; name: string; expires_at: string | null }[];
@@ -86,7 +87,7 @@ export function ExpiryBanner({ keys }: ExpiryBannerProps) {
                   : ` — Expires ${label}`}
               </span>
               <IconButton
-                icon={<X size={14} />}
+                icon={<HugeiconsIcon icon={Cancel01Icon} size={14} />}
                 ariaLabel={`Dismiss ${k.name}`}
                 onClick={() => handleDismiss(k.id)}
                 disabled={isPending}

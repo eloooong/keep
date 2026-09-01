@@ -5,7 +5,8 @@ import { KeyRow } from "@/components/keys/KeyRow";
 import { KeysToolbar } from "@/components/keys/KeysToolbar";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
 import { IconButton } from "@/components/ui/IconButton";
-import { RotateCcw } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { RotateCcwIcon } from "@hugeicons/core-free-icons";
 
 type KeyItem = {
   id: string;
@@ -106,7 +107,7 @@ export function KeysList({
             Adjust your search or filters to see more keys.
           </p>
           <IconButton
-            icon={<RotateCcw size={16} />}
+            icon={<HugeiconsIcon icon={RotateCcwIcon} size={16} />}
             ariaLabel="Reset filters"
             onClick={() => {
               setSearch("");

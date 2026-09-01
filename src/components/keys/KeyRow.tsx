@@ -9,16 +9,17 @@ import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { ClickSpark } from "@/components/react-bits/ClickSpark";
 import { SpotlightCard } from "@/components/react-bits/SpotlightCard";
 import { IconButton } from "@/components/ui/IconButton";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Copy,
-  Check,
-  Eye,
-  EyeOff,
-  Pencil,
-  Share2,
-  Trash2,
-  Loader2,
-} from "lucide-react";
+  Copy01Icon,
+  CheckIcon,
+  ViewIcon,
+  ViewOffIcon,
+  PencilEdit01Icon,
+  Share01Icon,
+  Delete02Icon,
+  Loading01Icon,
+} from "@hugeicons/core-free-icons";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -188,7 +189,13 @@ export function KeyRow({
           className=""
         >
           <IconButton
-            icon={copied ? <Check size={16} /> : <Copy size={16} />}
+            icon={
+              copied ? (
+                <HugeiconsIcon icon={CheckIcon} size={16} />
+              ) : (
+                <HugeiconsIcon icon={Copy01Icon} size={16} />
+              )
+            }
             ariaLabel={
               expired
                 ? "Expired"
@@ -205,11 +212,11 @@ export function KeyRow({
         <IconButton
           icon={
             isRevealing ? (
-              <Loader2 size={16} className="animate-spin" />
+              <HugeiconsIcon icon={Loading01Icon} size={16} className="animate-spin" />
             ) : revealed !== null ? (
-              <EyeOff size={16} />
+              <HugeiconsIcon icon={ViewOffIcon} size={16} />
             ) : (
-              <Eye size={16} />
+              <HugeiconsIcon icon={ViewIcon} size={16} />
             )
           }
           ariaLabel={
@@ -223,23 +230,23 @@ export function KeyRow({
           disabled={expired || isRevealing}
         />
         <IconButton
-          icon={<Pencil size={16} />}
+          icon={<HugeiconsIcon icon={PencilEdit01Icon} size={16} />}
           ariaLabel="Edit"
           onClick={() => setEditing(true)}
         />
         {isOwner && (
           <>
             <IconButton
-              icon={<Share2 size={16} />}
+              icon={<HugeiconsIcon icon={Share01Icon} size={16} />}
               ariaLabel="Share"
               onClick={() => setShowShares(true)}
             />
             <IconButton
               icon={
                 isDeleting ? (
-                  <Loader2 size={16} className="animate-spin" />
+                  <HugeiconsIcon icon={Loading01Icon} size={16} className="animate-spin" />
                 ) : (
-                  <Trash2 size={16} />
+                  <HugeiconsIcon icon={Delete02Icon} size={16} />
                 )
               }
               ariaLabel="Delete"

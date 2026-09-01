@@ -4,7 +4,8 @@ import { useState } from "react";
 import { NewKeyForm } from "@/components/keys/NewKeyForm";
 import { KeyFormModal } from "@/components/keys/KeyFormModal";
 import { IconButton } from "@/components/ui/IconButton";
-import { Plus } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { PlusSignIcon } from "@hugeicons/core-free-icons";
 
 export function AddKeyButton() {
   const [open, setOpen] = useState(false);
@@ -12,7 +13,7 @@ export function AddKeyButton() {
   return (
     <>
       <IconButton
-        icon={<Plus size={16} />}
+        icon={<HugeiconsIcon icon={PlusSignIcon} size={16} />}
         ariaLabel="Add key"
         onClick={() => setOpen(true)}
       />
