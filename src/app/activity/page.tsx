@@ -5,6 +5,8 @@ import { redirect } from "next/navigation";
 import { getActivity } from "@/app/actions/activity";
 import { ActivityList } from "@/components/activity/ActivityList";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { IconButton } from "@/components/ui/IconButton";
+import { LogOut } from "lucide-react";
 
 export default async function ActivityPage() {
   const supabase = await createClient();
@@ -36,12 +38,11 @@ export default async function ActivityPage() {
             Dashboard
           </Link>
           <form action={signOut}>
-            <button
+            <IconButton
+              icon={<LogOut size={16} />}
+              ariaLabel="Log out"
               type="submit"
-              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-            >
-              Logout
-            </button>
+            />
           </form>
         </div>
       </header>

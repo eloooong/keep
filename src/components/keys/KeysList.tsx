@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import { KeyRow } from "@/components/keys/KeyRow";
 import { KeysToolbar } from "@/components/keys/KeysToolbar";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
+import { IconButton } from "@/components/ui/IconButton";
+import { RotateCcw } from "lucide-react";
 
 type KeyItem = {
   id: string;
@@ -103,17 +105,16 @@ export function KeysList({
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Adjust your search or filters to see more keys.
           </p>
-          <button
-            type="button"
+          <IconButton
+            icon={<RotateCcw size={16} />}
+            ariaLabel="Reset filters"
             onClick={() => {
               setSearch("");
               setCategory("");
               setTag("");
             }}
-            className="mt-4 rounded-lg border border-black/[.08] px-4 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-          >
-            Reset filters
-          </button>
+            className="mt-4"
+          />
         </div>
       ) : null}
     </div>

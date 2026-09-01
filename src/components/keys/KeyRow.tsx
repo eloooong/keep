@@ -8,6 +8,17 @@ import { ManageShares } from "@/components/keys/ManageShares";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { ClickSpark } from "@/components/react-bits/ClickSpark";
 import { SpotlightCard } from "@/components/react-bits/SpotlightCard";
+import { IconButton } from "@/components/ui/IconButton";
+import {
+  Copy,
+  Check,
+  Eye,
+  EyeOff,
+  Pencil,
+  Share2,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 
 const COPY_CLEAR_MS = 15000;
 
@@ -155,7 +166,7 @@ export function KeyRow({
             {notes}
           </p>
         ) : null}
-        <p className="mt-1 font-mono text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 break-all font-mono text-sm text-zinc-500 dark:text-zinc-400">
           {revealed ?? maskedValue}
         </p>
         {lastViewedAt ? (
@@ -176,47 +187,67 @@ export function KeyRow({
           sparkRadius={18}
           className=""
         >
-          <button
-            type="button"
+          <IconButton
+            icon={copied ? <Check size={16} /> : <Copy size={16} />}
+            ariaLabel={
+              expired
+                ? "Expired"
+                : copied
+                  ? "Copied"
+                  : isCopying
+                    ? "Copying"
+                    : "Copy"
+            }
             onClick={handleCopy}
             disabled={expired || isCopying}
-            className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-          >
-            {expired ? "Expired" : copied ? "Copied" : isCopying ? "Copying..." : "Copy"}
-          </button>
+          />
         </ClickSpark>
-        <button
-          type="button"
+        <IconButton
+          icon={
+            isRevealing ? (
+              <Loader2 size={16} className="animate-spin" />
+            ) : revealed !== null ? (
+              <EyeOff size={16} />
+            ) : (
+              <Eye size={16} />
+            )
+          }
+          ariaLabel={
+            expired
+              ? "Expired"
+              : revealed !== null
+                ? "Hide"
+                : "Reveal"
+          }
           onClick={handleReveal}
           disabled={expired || isRevealing}
-          className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 disabled:opacity-50 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-        >
-          {expired ? "Expired" : revealed !== null ? "Hide" : isRevealing ? "Revealing..." : "Reveal"}
-        </button>
-        <button
-          type="button"
+        />
+        <IconButton
+          icon={<Pencil size={16} />}
+          ariaLabel="Edit"
           onClick={() => setEditing(true)}
-          className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-        >
-          Edit
-        </button>
+        />
         {isOwner && (
           <>
-            <button
-              type="button"
+            <IconButton
+              icon={<Share2 size={16} />}
+              ariaLabel="Share"
               onClick={() => setShowShares(true)}
-              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-            >
-              Share
-            </button>
-            <button
-              type="button"
+            />
+            <IconButton
+              icon={
+                isDeleting ? (
+                  <Loader2 size={16} className="animate-spin" />
+                ) : (
+                  <Trash2 size={16} />
+                )
+              }
+              ariaLabel="Delete"
+              title="Delete"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-white/[.15] dark:text-red-400 dark:hover:bg-red-950"
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </button>
+              variant="danger"
+            />
           </>
         )}
       </div>

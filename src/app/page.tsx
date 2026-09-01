@@ -7,6 +7,8 @@ import { AddKeyButton } from "@/components/keys/AddKeyButton";
 import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyCount } from "@/components/keys/KeyCount";
+import { IconButton } from "@/components/ui/IconButton";
+import { LogOut } from "lucide-react";
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -53,12 +55,11 @@ export default async function DashboardPage() {
             Activity
           </Link>
           <form action={signOut}>
-            <button
+            <IconButton
+              icon={<LogOut size={16} />}
+              ariaLabel="Log out"
               type="submit"
-              className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
-            >
-              Logout
-            </button>
+            />
           </form>
         </div>
       </header>

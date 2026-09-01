@@ -3,6 +3,8 @@
 import { type ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
+import { IconButton } from "@/components/ui/IconButton";
+import { X } from "lucide-react";
 
 export function KeyFormModal({
   open,
@@ -76,14 +78,11 @@ export function KeyFormModal({
             >
               Add a key
             </h2>
-            <button
-              type="button"
+            <IconButton
+              icon={<X size={16} />}
+              ariaLabel="Close"
               onClick={onClose}
-              className="text-zinc-400 transition-colors hover:text-zinc-700 dark:hover:text-zinc-200"
-              aria-label="Close"
-            >
-              &times;
-            </button>
+            />
           </div>
           {children}
         </div>

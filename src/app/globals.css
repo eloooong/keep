@@ -72,3 +72,30 @@ body {
     background-position: 200% 0;
   }
 }
+
+@keyframes line-wave-1 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes line-wave-2 {
+  from {
+    transform: translateX(-25%);
+  }
+  to {
+    transform: translateX(25%);
+  }
+}
+
+@keyframes line-wave-3 {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(50%);
+  }
+}

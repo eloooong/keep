@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SplitText } from "@/components/react-bits/SplitText";
 import { Aurora } from "@/components/react-bits/Aurora";
+import { LineWaves } from "@/components/react-bits/LineWaves";
 import { ShinyText } from "@/components/react-bits/ShinyText";
 
 export default function LoginPage() {
@@ -38,8 +39,10 @@ export default function LoginPage() {
   }
 
   return (
-    <Aurora className="flex flex-1 items-center justify-center px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.1] dark:bg-zinc-900">
+    <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4">
+      <Aurora className="absolute inset-0" />
+      <LineWaves />
+      <div className="relative z-10 w-full max-w-sm rounded-2xl border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.1] dark:bg-zinc-900">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
           <SplitText text="Log in" delay={100} stagger={0.04} />
         </h1>
@@ -105,6 +108,6 @@ export default function LoginPage() {
           </Link>
         </p>
       </div>
-    </Aurora>
+    </main>
   );
 }

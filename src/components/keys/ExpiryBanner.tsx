@@ -8,6 +8,8 @@ import {
 } from "@/app/actions/keys";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
+import { IconButton } from "@/components/ui/IconButton";
+import { X } from "lucide-react";
 
 type ExpiryBannerProps = {
   keys: { id: string; name: string; expires_at: string | null }[];
@@ -83,15 +85,13 @@ export function ExpiryBanner({ keys }: ExpiryBannerProps) {
                   ? ` — Expired ${label}`
                   : ` — Expires ${label}`}
               </span>
-              <button
-                type="button"
+              <IconButton
+                icon={<X size={14} />}
+                ariaLabel={`Dismiss ${k.name}`}
                 onClick={() => handleDismiss(k.id)}
                 disabled={isPending}
-                className="ml-auto flex-shrink-0 text-xs text-amber-700/60 transition-colors hover:text-amber-900 disabled:opacity-50 dark:text-amber-300/60 dark:hover:text-amber-100"
-                aria-label={`Dismiss ${k.name}`}
-              >
-                &times;
-              </button>
+                className="ml-auto flex-shrink-0"
+              />
             </li>
           );
           })}
