@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e6]:
+      - generic [ref=e7]:
+        - heading "Keep." [level=1] [ref=e8]
+        - paragraph [ref=e10]: Keep every API key in one safe place.
+        - list [ref=e11]:
+          - listitem [ref=e12]:
+            - generic [ref=e17]:
+              - generic [ref=e18]: Encrypted storage
+              - generic [ref=e19]: Your keys are encrypted before they ever touch storage.
+          - listitem [ref=e20]:
+            - generic [ref=e25]:
+              - generic [ref=e26]: Secure sharing
+              - generic [ref=e27]: Share access with your team without exposing secrets.
+          - listitem [ref=e28]:
+            - generic [ref=e33]:
+              - generic [ref=e34]: Expiry reminders
+              - generic [ref=e35]: Get notified before a key expires, every time.
+      - generic [ref=e36]:
+        - heading "Log in" [level=2] [ref=e37]
+        - paragraph [ref=e39]: Welcome back. Enter your credentials to continue.
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]: Email
+            - textbox "Email" [ref=e43]
+          - generic [ref=e44]:
+            - generic [ref=e45]:
+              - generic [ref=e46]: Password
+              - button "Forgot password?" [ref=e47]
+            - textbox "Password" [ref=e48]
+          - generic [ref=e49]:
+            - checkbox "Stay signed in" [checked] [ref=e50]
+            - text: Stay signed in
+          - button "Log in" [ref=e51]
+        - generic [ref=e52]: or continue with
+        - generic [ref=e55]:
+          - button "GitHub" [ref=e56]
+          - button "Google" [ref=e59]
+        - paragraph [ref=e65]:
+          - text: Don't have an account?
+          - link "Sign up" [ref=e66] [cursor=pointer]:
+            - /url: /signup
+  - alert [ref=e67]

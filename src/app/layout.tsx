@@ -16,6 +16,14 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Keep",
   description: "Securely store, share, and expiry-manage your API keys.",
+  icons: {
+    icon: "/keep_logo.png",
+  },
+  openGraph: {
+    title: "Keep",
+    description: "Securely store, share, and expiry-manage your API keys.",
+    images: ["/keep_logo.png"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
