@@ -166,7 +166,7 @@ export function KeyRow({
             {notes}
           </p>
         ) : null}
-        <p className="mt-1 break-all font-mono text-sm text-zinc-500 dark:text-zinc-400">
+        <p className="mt-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-zinc-500 dark:text-zinc-400">
           {revealed ?? maskedValue}
         </p>
         {lastViewedAt ? (

@@ -1,0 +1,28 @@
+- generic [active] [ref=f1e1]:
+  - main [ref=f1e2]:
+    - generic [ref=f1e6]:
+      - heading "Keep." [level=1] [ref=f1e8]
+      - heading "Log in" [level=2] [ref=f1e9]
+      - paragraph [ref=f1e11]: Welcome back. Enter your credentials to continue.
+      - generic [ref=f1e12]:
+        - generic [ref=f1e13]:
+          - generic [ref=f1e14]: Email
+          - textbox "Email" [ref=f1e15]
+        - generic [ref=f1e16]:
+          - generic [ref=f1e17]:
+            - generic [ref=f1e18]: Password
+            - button "Forgot password?" [ref=f1e19]
+          - textbox "Password" [ref=f1e20]
+        - generic [ref=f1e21]:
+          - checkbox "Stay signed in" [checked] [ref=f1e22]
+          - text: Stay signed in
+        - button "Log in" [ref=f1e23]
+      - generic [ref=f1e24]: or continue with
+      - generic [ref=f1e27]:
+        - button "GitHub" [ref=f1e28]
+        - button "Google" [ref=f1e31]
+      - paragraph [ref=f1e37]:
+        - text: Don't have an account?
+        - link "Sign up" [ref=f1e38] [cursor=pointer]:
+          - /url: /signup
+  - button "Open Next.js Dev Tools" [ref=f1e44] [cursor=pointer]

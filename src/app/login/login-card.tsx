@@ -138,7 +138,7 @@ function LoginCardContent() {
     <div className="w-full max-w-sm justify-self-center rounded-2xl border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.1] dark:bg-zinc-900 lg:justify-self-end">
       <div className="mb-6 lg:hidden">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Keep
+          Keep.
         </h1>
       </div>
 
