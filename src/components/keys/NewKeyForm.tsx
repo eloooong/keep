@@ -1,11 +1,13 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { createKey } from "@/app/actions/keys";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
 import { Magnet } from "@/components/react-bits/Magnet";
 
 export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -14,6 +16,7 @@ export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
       action={(formData) => {
         startTransition(async () => {
           await createKey(formData);
+          router.refresh();
           onSubmit?.();
         });
       }}

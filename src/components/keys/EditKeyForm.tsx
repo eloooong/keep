@@ -1,6 +1,7 @@
 "use client";
 
 import { useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { updateKey } from "@/app/actions/keys";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
 import { Magnet } from "@/components/react-bits/Magnet";
@@ -25,6 +26,7 @@ export function EditKeyForm({
   onCancel: () => void;
 }) {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   return (
     <form
@@ -32,6 +34,7 @@ export function EditKeyForm({
       action={(formData) => {
         startTransition(async () => {
           await updateKey(keyId, formData);
+          router.refresh();
           onDone();
         });
       }}

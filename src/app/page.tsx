@@ -3,7 +3,7 @@ import { signOut } from "@/app/actions/auth";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { KeysList } from "@/components/keys/KeysList";
-import { NewKeyForm } from "@/components/keys/NewKeyForm";
+import { AddKeyButton } from "@/components/keys/AddKeyButton";
 import { ExpiryBanner } from "@/components/keys/ExpiryBanner";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { KeyCount } from "@/components/keys/KeyCount";
@@ -68,17 +68,13 @@ export default async function DashboardPage() {
           <ExpiryBanner keys={bannerKeys} />
         )}
 
-        <section className="mb-10 rounded-2xl border border-black/[.08] p-6 dark:border-white/[.1]">
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Add a key
-          </h2>
-          <NewKeyForm />
-        </section>
-
         <section>
-          <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
-            Your keys (<KeyCount value={keys ? keys.length : 0} />)
-          </h2>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              Your keys (<KeyCount value={keys ? keys.length : 0} />)
+            </h2>
+            <AddKeyButton />
+          </div>
           {keys && keys.length > 0 ? (
             <KeysList keys={keys} currentUserId={user.id} />
           ) : (

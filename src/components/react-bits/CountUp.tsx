@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 export function CountUp({
   end,
@@ -14,19 +14,14 @@ export function CountUp({
   startAs?: number;
 }) {
   const [value, setValue] = useState(startAs);
-  const prevEndRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (prevEndRef.current === end) return;
-    prevEndRef.current = end;
-
-    const start = startAs;
     const startTime = performance.now();
 
     function step(now: number) {
       const progress = Math.min((now - startTime) / duration, 1);
       const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(start + (end - start) * eased));
+      setValue(Math.round(startAs + (end - startAs) * eased));
       if (progress < 1) {
         requestAnimationFrame(step);
       }

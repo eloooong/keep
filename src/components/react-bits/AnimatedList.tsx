@@ -15,25 +15,22 @@ export function AnimatedList({
   const count = items.length;
 
   const [revealedCount, setRevealedCount] = useState(0);
-  const prevCountRef = useRef(count);
-  const initialisedRef = useRef(false);
+  const prevCountRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (!initialisedRef.current) {
-      initialisedRef.current = true;
-      const timers = items.map((_, i) =>
-        setTimeout(() => setRevealedCount((c) => Math.max(c, i + 1)), i * staggerDelay)
-      );
-      return () => timers.forEach(clearTimeout);
-    }
-  }, [items, count, staggerDelay]);
+    const prev = prevCountRef.current;
+    prevCountRef.current = count;
 
-  useEffect(() => {
-    if (initialisedRef.current && count !== prevCountRef.current) {
-      prevCountRef.current = count;
+    if (prev !== null && count > prev) {
       setRevealedCount(count);
+      return;
     }
-  }, [count]);
+
+    const timers = items.map((_, i) =>
+      setTimeout(() => setRevealedCount((c) => Math.max(c, i + 1)), i * staggerDelay)
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [count, items, staggerDelay]);
 
   return (
     <div className={className}>

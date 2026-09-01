@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { revealKey, deleteKey, copyKey } from "@/app/actions/keys";
 import { EditKeyForm } from "@/components/keys/EditKeyForm";
 import { ManageShares } from "@/components/keys/ManageShares";
@@ -38,6 +39,7 @@ export function KeyRow({
   const [isRevealing, startReveal] = useTransition();
   const [isDeleting, startDelete] = useTransition();
   const [isCopying, startCopy] = useTransition();
+  const router = useRouter();
 
   const expired = expiryStatus(expiresAt) === "expired";
 
@@ -74,6 +76,7 @@ export function KeyRow({
     if (!window.confirm(`Delete "${name}"?`)) return;
     startDelete(async () => {
       await deleteKey(keyId);
+      router.refresh();
     });
   }
 
