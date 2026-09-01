@@ -4,7 +4,6 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateKey } from "@/app/actions/keys";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
-import { Magnet } from "@/components/react-bits/Magnet";
 
 export function EditKeyForm({
   keyId,
@@ -144,15 +143,13 @@ export function EditKeyForm({
       </div>
       </AnimatedContent>
       <div className="flex gap-2">
-        <Magnet active={!isPending}>
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-          >
-            {isPending ? "Saving..." : "Save"}
-          </button>
-        </Magnet>
+        <button
+          type="submit"
+          disabled={isPending}
+          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+        >
+          {isPending ? "Saving..." : "Save"}
+        </button>
         <button
           type="button"
           onClick={onCancel}
