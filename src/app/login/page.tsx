@@ -34,10 +34,10 @@ export default function LoginPage() {
       <div className="relative z-10 grid w-full max-w-4xl items-center gap-12 lg:grid-cols-2">
         <div className="hidden lg:block">
           <h1 className="text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-            <SplitText text="Keep" delay={100} stagger={0.05} />
+            <SplitText text="Keep." delay={100} stagger={0.05} />
           </h1>
           <p className="mt-3 text-lg text-zinc-700 dark:text-zinc-300">
-            <ShinyText text="Keep your API keys safe, shared, and expired on time." />
+            <ShinyText text="Keep every API key in one safe place." />
           </p>
 
           <ul className="mt-8 flex flex-col gap-5">
