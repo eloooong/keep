@@ -1,0 +1,25 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e7]:
+      - heading [level=1] [ref=e8]:
+        - generic "Log in" [ref=e9]:
+          - generic [ref=e30]: L
+          - generic [ref=e31]: o
+          - generic [ref=e32]: g
+          - generic [ref=e34]: i
+          - generic [ref=e35]: "n"
+      - paragraph [ref=e10]: Welcome back. Enter your credentials to continue.
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: Email
+          - textbox "Email" [ref=e14]
+        - generic [ref=e15]:
+          - generic [ref=e16]: Password
+          - textbox "Password" [ref=e17]
+        - button "Log in" [ref=e18]
+      - paragraph [ref=e19]:
+        - text: Don't have an account?
+        - link "Sign up" [ref=e20] [cursor=pointer]:
+          - /url: /signup
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]
+  - alert [ref=e36]
