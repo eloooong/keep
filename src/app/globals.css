@@ -14,54 +14,6 @@ body {
   color: var(--foreground);
 }
 
-@keyframes aurora {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  25% {
-    transform: translate(5%, -5%) rotate(2deg);
-  }
-  50% {
-    transform: translate(-3%, 3%) rotate(-1deg);
-  }
-  75% {
-    transform: translate(3%, 5%) rotate(1.5deg);
-  }
-}
-
-@keyframes click-spark-fade {
-  0% {
-    transform: translate(-50%, -50%) rotate(var(--spark-angle)) translateY(0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, -50%) rotate(var(--spark-angle))
-      translateY(calc(-1 * var(--spark-radius)));
-    opacity: 0;
-  }
-}
-
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-@keyframes shimmer-sweep {
-  0% {
-    background-position: -100% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
 /* Keep workspace — neutral dark surfaces; color is reserved for status. */
 :root {
   --background: #101010;
@@ -1900,14 +1852,8 @@ textarea::placeholder {
   .key-modal-panel {
     animation: none;
   }
-  .animate-aurora,
-  .animate-gradient-shift,
-  .animate-shimmer-sweep {
-    animation: none;
-  }
   .animated-content,
-  .animated-list-item,
-  .magnet-target {
+  .animated-list-item {
     transform: none !important;
     opacity: 1 !important;
     transition: none !important;

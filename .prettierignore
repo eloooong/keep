@@ -1,0 +1,10 @@
+node_modules/
+.next/
+.local/
+.motion-work/
+.motion-tools/
+.vercel/
+design/
+public/showcase/
+package-lock.json
+**/LICENSE*.md

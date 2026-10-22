@@ -4,7 +4,7 @@ import wave
 import numpy as np
 
 RATE = 48000
-DURATION = 30
+DURATION = 18
 rng = np.random.default_rng(42)
 score = np.zeros((RATE * DURATION, 2), dtype=np.float64)
 
@@ -40,7 +40,7 @@ for bar in range(8):
         pad = (np.sin(2*np.pi*f*t) + .35*np.sin(2*np.pi*(f+.7)*t)) * env
         add(pad, start, .024, (j-1.5)/2)
 
-for beat in range(56):
+for beat in range(32):
     start = beat * .5
     # Rounded kick, gentle offbeat tick, sparse marimba-like motif.
     t = np.arange(round(.28*RATE)) / RATE
@@ -55,7 +55,7 @@ for beat in range(56):
         add(tone(chord[(beat//2) % 4]*4, .9, 5), start+.25, .041, -.3 if beat % 4 else .3)
 
 # Scene-change accents, then a resolved brand chord.
-for start in [0, 4, 8, 12, 16, 20, 23]:
+for start in [0, 1.9, 5, 7.6, 10.3, 12.9, 15.4]:
     t = np.arange(round(.5*RATE))/RATE
     noise = rng.normal(0, 1, len(t))
     filtered = np.convolve(noise, np.ones(24)/24, mode='same')
@@ -63,7 +63,7 @@ for start in [0, 4, 8, 12, 16, 20, 23]:
     add(whoosh, max(0, start-.23), .065, -.2)
     add(tone(880, .6, 8), start+.05, .025, .2)
 for j, f in enumerate([293.66, 440, 554.37, 739.99]):
-    add(tone(f, 5, .65), 24+j*.06, .046, (j-1.5)/2)
+    add(tone(f, 5, .65), 15.6+j*.06, .046, (j-1.5)/2)
 
 t = np.arange(len(score))/RATE
 score *= (np.minimum(t/.12, 1) * np.minimum((DURATION-t)/1.7, 1))[:, None]

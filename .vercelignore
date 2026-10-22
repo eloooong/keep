@@ -11,4 +11,6 @@ supabase/.branches/
 
 # Local design references and source media are not application assets.
 design/
-/Bryl_Lim_-_one-shot_by_sonnet_5.5_Hf8lv3.mp4
+/*.mp4
+.local/
+.venv/

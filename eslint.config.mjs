@@ -18,6 +18,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     ".motion-work/**",
     ".motion-tools/**",
+    ".local/**",
+    "design/**",
+    ".venv/**",
   ]),
 ]);
 

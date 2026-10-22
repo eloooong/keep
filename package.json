@@ -10,9 +10,10 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --import tsx --test tests/*.test.mjs",
-    "typecheck": "tsc --noEmit --incremental false",
-    "format": "prettier --write src tests package.json eslint.config.mjs README.md",
-    "check": "npm run lint && npm run typecheck && npm test"
+    "typecheck": "next typegen && tsc --noEmit --incremental false",
+    "format": "prettier --write src tests/*.mjs package.json eslint.config.mjs README.md docs",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "format:check": "prettier --check src tests/*.mjs package.json eslint.config.mjs README.md docs"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.3.0",
@@ -34,11 +35,14 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
-    "jsrepo": "^3.8.1",
     "prettier": "^3.9.10",
     "supabase": "^2.121.0",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5"
+  },
+  "description": "A personal API key vault with encrypted storage, sharing, and activity tracking.",
+  "engines": {
+    "node": "24.x"
   }
 }

@@ -45,3 +45,11 @@ next-env.d.ts
 # Local motion-graphics tooling and intermediate renders
 /.motion-tools/
 /.motion-work/
+
+# Local design archives and reference media
+/design/
+/.local/
+/*.mp4
+__pycache__/
+*.py[cod]
+/.venv/
