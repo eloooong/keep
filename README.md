@@ -1,62 +1,105 @@
 # Keep
 
+An API key vault for organizing credentials, managing shared access, and tracking activity across your projects.
+
+[Live application](https://keep-umber-eta.vercel.app) · [Development guide](docs/development.md) · [Deployment guide](docs/deployment.md)
+
 [![Checks](https://github.com/eloooong/keep/actions/workflows/checks.yml/badge.svg)](https://github.com/eloooong/keep/actions/workflows/checks.yml)
 
-A personal API key vault. Store credentials, find them quickly, and share access with the people who need them.
+![Keep workspace showing the key collection, search controls, and expiration tracking](docs/images/keep-vault.png)
 
-[Open Keep](https://keep-umber-eta.vercel.app) · [Setup](docs/development.md) · [Deployment](docs/deployment.md)
+## Overview
 
-## Features
+Keep brings API credentials into one workspace with searchable metadata, explicit sharing permissions, and an activity history. It is built with Next.js, React, TypeScript, and Supabase, with a responsive dark interface.
 
-- Encrypted key storage with tags, categories, and search
-- View or edit permissions for shared keys
-- Activity history for changes and key access
-- Expiration tracking and optional email reminders
-- Email/password, Google, and GitHub authentication
+| Capability          | Details                                                                  |
+| ------------------- | ------------------------------------------------------------------------ |
+| Credential storage  | Server-side AES-256-GCM encryption for stored key values                 |
+| Organization        | Search by name, notes, or tags; filter by category and tag               |
+| Shared access       | Grant view or edit permissions and revoke access                         |
+| Activity history    | Record key changes and access, retaining history after deletion          |
+| Expiration tracking | Identify upcoming expirations and optionally send email reminders        |
+| Authentication      | Email/password, Google, and GitHub through configured Supabase providers |
 
-Built with Next.js, React, TypeScript, and Supabase. Key values are encrypted on the server with AES-256-GCM; this is encryption at rest, not end-to-end encryption.
+## Quick start
 
-## Getting started
+**Requirements:** Node.js 24 and npm. Docker is needed only for the local Supabase stack.
 
-Requires Node.js 24 and npm.
+### 1. Install dependencies
 
 ```sh
+git clone https://github.com/eloooong/keep.git
+cd keep
 npm ci
+```
+
+### 2. Configure the environment
+
+Copy `.env.example` to `.env.local`:
+
+```sh
 cp .env.example .env.local
 ```
 
-For a sample workspace, set `NEXT_PUBLIC_DEMO_MODE=true` in `.env.local`:
+To explore the application without configuring external services, set:
+
+```dotenv
+NEXT_PUBLIC_DEMO_MODE=true
+```
+
+This mode uses shared, in-memory sample data that may reset on restart or redeployment.
+
+### 3. Start the application
 
 ```sh
 npm run dev
 ```
 
-Open [localhost:3000](http://localhost:3000). Sample data is shared in process memory and resets when the server restarts.
+Open [localhost:3000](http://localhost:3000).
 
-For persistent accounts and keys, follow the [development guide](docs/development.md). Demo mode is opt-in; missing credentials never enable it automatically.
+For persistent accounts and credentials, use the [local development guide](docs/development.md) to configure Supabase and the encryption key. Demo mode must be enabled explicitly; missing configuration never bypasses authentication.
+
+## Security model
+
+Key values are encrypted on the server before storage. Access is enforced through server-side authorization and PostgreSQL row-level security. Owners manage sharing; recipients receive view or edit permissions.
+
+Encryption is **at rest**, not end-to-end: the application server can decrypt values for authorized requests. Keep the server encryption key private and backed up. Replacing or losing it makes existing encrypted values unreadable.
+
+See the [architecture guide](docs/architecture.md) for the data flow, access rules, and service boundaries.
 
 ## Development
 
-```sh
-npm run check
-npm run build
+| Command                | Purpose                                                           |
+| ---------------------- | ----------------------------------------------------------------- |
+| `npm run dev`          | Start the development server                                      |
+| `npm run check`        | Run ESLint, generate route types, check TypeScript, and run tests |
+| `npm run format:check` | Verify source and documentation formatting                        |
+| `npm run build`        | Create a production build                                         |
+| `npm start`            | Serve the production build                                        |
+
+Tests use Node's test runner and PGlite to exercise database permissions, ownership constraints, audit behavior, encryption, and reminder delivery logic without an external database. GitHub Actions runs formatting, lint, type checks, tests, and a demo-mode production build on every push and pull request.
+
+Browser test setup and integration checks are documented in the [development guide](docs/development.md).
+
+## Project structure
+
+```text
+src/
+  app/           Routes, server actions, and styles
+  components/    Vault, authentication, and shared UI
+  utils/         Encryption, service clients, and demo data
+supabase/        Database schema, migrations, and local configuration
+tests/           Application, database, and browser tests
+scripts/         Local backend and product-film tooling
+docs/            Development, architecture, and deployment guides
 ```
-
-Checks run ESLint, TypeScript, and database/application tests. GitHub Actions runs them and a demo build on every push and pull request.
-
-| Directory        | Contents                                              |
-| ---------------- | ----------------------------------------------------- |
-| `src/app`        | Routes, server actions, and styles                    |
-| `src/components` | Vault, authentication, and shared UI                  |
-| `src/utils`      | Encryption, service clients, reminders, and demo data |
-| `supabase`       | Database schema, migrations, and local configuration  |
-| `tests`          | Unit, database, and browser checks                    |
-| `scripts`        | Local backend and product-film tooling                |
 
 ## Documentation
 
-- [Local development and testing](docs/development.md)
-- [Application architecture](docs/architecture.md)
-- [Deployment and database upgrades](docs/deployment.md)
-- [Social sign-in configuration](docs/social-sign-in.md)
-- [Third-party animation attribution](src/components/react-bits/README.md)
+| Guide                                                        | Contents                                            |
+| ------------------------------------------------------------ | --------------------------------------------------- |
+| [Development](docs/development.md)                           | Local setup, environment configuration, and testing |
+| [Architecture](docs/architecture.md)                         | Data flow, permissions, and service boundaries      |
+| [Deployment](docs/deployment.md)                             | Hosting, database upgrades, and expiry reminders    |
+| [Social sign-in](docs/social-sign-in.md)                     | OAuth provider configuration and callbacks          |
+| [Animation attribution](src/components/react-bits/README.md) | React Bits adaptations and third-party licenses     |
