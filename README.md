@@ -1,8 +1,5 @@
 <div align="center">
-  <img src="public/brand/icon-192.png" alt="Keep logo" width="72" height="72" />
-
-  <h1>Keep</h1>
-  <p><strong>Your keys. One place.</strong></p>
+  <img src="docs/images/keep-banner.svg" alt="Keep — Your keys. One place. API key vault with encrypted storage and controlled sharing." width="100%" />
   <p>An API key vault for organizing credentials, sharing access, and tracking activity.</p>
 
   <p>

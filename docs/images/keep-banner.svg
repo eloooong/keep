@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="420" viewBox="0 0 1280 420" role="img" aria-labelledby="banner-title banner-desc">
+  <title id="banner-title">Keep — Your keys. One place.</title>
+  <desc id="banner-desc">Keep API key vault. A white wordmark on a charcoal background beside layered credential cards with masked values and a lock.</desc>
+  <defs>
+    <radialGradient id="ambient"><stop stop-color="#282828"/><stop offset="1" stop-color="#101010"/></radialGradient>
+    <linearGradient id="card" x2="1" y2="1"><stop stop-color="#252525"/><stop offset="1" stop-color="#171717"/></linearGradient>
+    <filter id="shadow" x="-30%" y="-60%" width="170%" height="230%"><feDropShadow dy="18" stdDeviation="20" flood-opacity=".3"/></filter>
+    <clipPath id="frame"><rect width="1280" height="420" rx="20"/></clipPath>
+  </defs>
+  <g clip-path="url(#frame)">
+    <rect width="1280" height="420" fill="#101010"/>
+    <ellipse cx="1020" cy="160" rx="560" ry="380" fill="url(#ambient)"/>
+    <g fill="none" stroke="#dedede" stroke-opacity=".055"><path d="M630 82 C780 2 1060 182 1280 62"/><path d="M630 118 C780 38 1060 218 1280 98"/><path d="M630 154 C780 74 1060 254 1280 134"/><path d="M630 190 C780 110 1060 290 1280 170"/><path d="M630 226 C780 146 1060 326 1280 206"/><path d="M630 262 C780 182 1060 362 1280 242"/><path d="M630 298 C780 218 1060 398 1280 278"/><path d="M630 334 C780 254 1060 434 1280 314"/><path d="M630 370 C780 290 1060 470 1280 350"/></g>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 794 256" x="86" y="87" width="355" height="115"><g transform="translate(0 20) scale(.76)"><path fill="#f5f5f5" d="M72 24H184A48 48 0 0 1 232 72V104H120A36 36 0 1 0 120 144H136V168H160V144H184V176H208V144H232V184A48 48 0 0 1 184 232H72A48 48 0 0 1 24 184V72A48 48 0 0 1 72 24Z"/></g><g transform="translate(224 0)"><g fill="#eeeeee"><path d="M0 8H27V108L81 54H115L60 109L135 184H97L41 128L27 142V184H0Z"/><path fill-rule="evenodd" transform="translate(152 0)" d="M118 128H28C31 149 43 162 63 162C78 162 90 155 100 144L116 160C102 178 84 185 62 185C24 185 0 158 0 119C0 80 24 52 60 52C96 52 118 79 118 116Z M28 106H90C87 86 76 75 60 75C43 75 32 86 28 106Z"/><path fill-rule="evenodd" transform="translate(288 0)" d="M118 128H28C31 149 43 162 63 162C78 162 90 155 100 144L116 160C102 178 84 185 62 185C24 185 0 158 0 119C0 80 24 52 60 52C96 52 118 79 118 116Z M28 106H90C87 86 76 75 60 75C43 75 32 86 28 106Z"/><path fill-rule="evenodd" transform="translate(426 0)" d="M0 54H26V68C36 56 49 50 64 50C97 50 120 78 120 118C120 158 97 186 64 186C49 186 36 180 26 169V240H0Z M26 118C26 146 39 162 60 162C81 162 94 146 94 118C94 90 81 74 60 74C39 74 26 90 26 118Z"/></g></g></svg>
+    <g font-family="Inter, Segoe UI, Arial, sans-serif">
+      <text x="100" y="263" fill="#ededed" font-size="32" font-weight="500" letter-spacing="-.7">Your keys. One place.</text>
+      <text x="101" y="300" fill="#969696" font-size="16">Encrypted storage. Access on your terms.</text>
+      <path d="M100 350H1180" stroke="#303030"/>
+      <text x="101" y="383" fill="#858585" font-size="11" letter-spacing="2">API KEY VAULT</text>
+      <text x="1179" y="383" fill="#858585" font-size="11" letter-spacing="1.4" text-anchor="end">STORE / SHARE / TRACK</text>
+      <g transform="translate(746 95) rotate(-5 210 110)" filter="url(#shadow)">
+        <rect x="35" y="92" width="380" height="127" rx="17" fill="#151515" stroke="#363636"/>
+        <path d="M63 175H217" stroke="#484848" stroke-width="6" stroke-linecap="round" stroke-dasharray="1 16"/>
+        <text x="64" y="205" fill="#818181" font-size="12">Shared with permission</text>
+        <rect width="407" height="130" rx="17" fill="url(#card)" stroke="#494949"/>
+        <rect x="25" y="23" width="33" height="33" rx="9" fill="#353535"/>
+        <g transform="translate(31 29)" fill="none" stroke="#e7e7e7" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="15" height="11" rx="2.5"/><path d="M6 9V6a4.5 4.5 0 0 1 9 0v3"/><path d="M10.5 14v2"/></g>
+        <text x="72" y="44" fill="#e7e7e7" font-size="15" font-weight="600">Production key</text>
+        <rect x="303" y="29" width="78" height="24" rx="12" fill="#303030" stroke="#4a4a4a"/>
+        <text x="342" y="45" text-anchor="middle" fill="#c6c6c6" font-size="10">Encrypted</text>
+        <g fill="#a4a4a4"><circle cx="30" cy="88" r="3"/><circle cx="47" cy="88" r="3"/><circle cx="64" cy="88" r="3"/><circle cx="81" cy="88" r="3"/><circle cx="98" cy="88" r="3"/><circle cx="115" cy="88" r="3"/><circle cx="132" cy="88" r="3"/><circle cx="149" cy="88" r="3"/><circle cx="166" cy="88" r="3"/><circle cx="183" cy="88" r="3"/><circle cx="200" cy="88" r="3"/></g>
+        <path d="M359 83a7 7 0 1 0 0 10h13v-4h-4v-4h-9" fill="none" stroke="#b4b4b4" stroke-width="1.6" stroke-linejoin="round"/>
+      </g>
+    </g>
+  </g>
+  <rect x=".5" y=".5" width="1279" height="419" rx="19.5" fill="none" stroke="#333333"/>
+</svg>
