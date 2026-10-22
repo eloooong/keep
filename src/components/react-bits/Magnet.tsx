@@ -34,7 +34,7 @@ export function Magnet({
   return (
     <div
       ref={ref}
-      className={`inline-block ${className}`}
+      className={`magnet-target inline-block ${className}`}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{

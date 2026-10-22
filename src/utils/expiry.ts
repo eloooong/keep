@@ -1,7 +1,7 @@
 export const SOON_DAYS = 7;
 
 export function expiryStatus(
-  expiresAt: string | null
+  expiresAt: string | null,
 ): "none" | "soon" | "expired" {
   if (!expiresAt) return "none";
   const now = new Date();

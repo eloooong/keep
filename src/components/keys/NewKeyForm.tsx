@@ -1,11 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createKey } from "@/app/actions/keys";
 
 export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   return (
@@ -13,12 +14,26 @@ export function NewKeyForm({ onSubmit }: { onSubmit?: () => void }) {
       className="space-y-3"
       action={(formData) => {
         startTransition(async () => {
-          await createKey(formData);
-          router.refresh();
-          onSubmit?.();
+          setError(null);
+          try {
+            await createKey(formData);
+            router.refresh();
+            onSubmit?.();
+          } catch (error) {
+            setError(
+              error instanceof Error
+                ? error.message
+                : "Unable to save this key. Please try again.",
+            );
+          }
         });
       }}
     >
+      {error && (
+        <p role="alert" className="row-error">
+          {error}
+        </p>
+      )}
       <div className="space-y-3">
         <div>
           <label

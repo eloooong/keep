@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Less key hunting. More building. A 18-second motion showcase of Keep.">
+  <title>Keep — The product film</title>
+  <link rel="icon" href="assets/logo.png">
+  <style>
+    @font-face{font-family:Geist;src:url(assets/geist.woff2) format('woff2');font-weight:100 900;font-display:swap}
+    *{box-sizing:border-box}body{margin:0;background:#efefed;color:#171918;font-family:Geist,Arial,sans-serif}
+    main{max-width:1100px;margin:auto;padding:28px 24px}header{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;font-size:13px;color:#767a76}
+    .brand{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:650;color:#171918}.brand img{width:28px;height:28px}
+    .film{aspect-ratio:16/9;position:relative;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 14px 55px #17261c0c}canvas{width:100%;height:100%;display:block}
+    .controls{display:flex;gap:16px;align-items:center;margin-top:20px}button,a.download{border:1px solid #d4d7d2;background:transparent;color:inherit;border-radius:100px;padding:10px 17px;font:500 12px Geist,Arial;cursor:pointer;text-decoration:none;white-space:nowrap}
+    button:hover,a.download:hover{background:#e0e3dc}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #648768;outline-offset:4px}#play{background:#171918;color:#fff;border-color:#171918;min-width:79px}
+    input{flex:1;min-width:50px;accent-color:#668669;cursor:pointer}time{font-size:12px;color:#717771;font-variant-numeric:tabular-nums;white-space:nowrap}
+    footer{display:flex;justify-content:space-between;gap:12px;margin-top:24px;color:#818680;font-size:11px;line-height:1.7}footer a{color:inherit}.capture main{padding:0;max-width:none}.capture header,.capture .controls,.capture footer{display:none}.capture .film{border-radius:0;box-shadow:none;width:1920px;height:1080px}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:600px){main{padding:20px 12px}.controls{gap:8px;flex-wrap:wrap}button,a.download{padding:9px 12px}time{font-size:10px}header span{font-size:11px}footer{flex-direction:column}#seek{order:5;flex-basis:100%}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div class="brand"><img src="assets/logo.png" alt="">Keep<span style="font-weight:400;color:#858985"> / The product film</span></div><span>18 seconds · Desktop film</span></header>
+  <div class="film"><canvas id="film" width="1920" height="1080" role="img" aria-label="Keep desktop product film: encrypted API-key storage, desktop search, permission-based sharing, expiry reminders, and light and dark themes."></canvas></div>
+  <div class="controls" aria-label="Film playback controls">
+    <button id="play" disabled aria-label="Play film">Loading</button><button id="replay" disabled>Replay</button>
+    <input id="seek" type="range" min="0" max="18" step="0.01" value="0" disabled aria-label="Film position">
+    <time id="time">0:00 / 0:18</time><button id="sound" aria-pressed="false">Sound off</button>
+    <a class="download" href="keep-desktop-showcase.mp4" download>Download MP4 ↗</a>
+  </div>
+  <footer><span>Less key hunting. More building.</span><span>Demo data · Original motion &amp; sound · <a href="#transcript">Transcript</a></span></footer>
+  <details id="transcript" style="margin-top:20px;font-size:12px;color:#747a74"><summary>Film transcript</summary><p>0–1.9s: Less key hunting. More building. 1.9–5s: One vault. Your whole stack. Encrypted keys. Clear categories. Everything right where you left it. 5–7.6s: The right key. Right now. 7.6–10.3s: Access. On your terms. Invite your people. Choose what they can do. 10.3–12.9s: A heads-up. Before the hurry. Expiry reminders, built in. 12.9–15.4s: Late-night ideas. Same clear view. 15.4–18s: Keys kept. Ideas moving. Meet Keep.</p></details>
+  <p id="error" role="alert" hidden></p>
+</main>
+<audio id="audio" src="assets/soundtrack-v2.wav" preload="auto" loop></audio>
+<script src="film-v2.js"></script>
+</body>
+</html>

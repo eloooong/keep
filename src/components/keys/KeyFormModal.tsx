@@ -2,10 +2,9 @@
 
 import { type ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
+
 import { IconButton } from "@/components/ui/IconButton";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { Glyph } from "@/components/ui/Glyph";
 
 export function KeyFormModal({
   open,
@@ -41,6 +40,28 @@ export function KeyFormModal({
     if (!open) return;
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
+      if (e.key === "Tab") {
+        const items = panelRef.current?.querySelectorAll<HTMLElement>(
+          "button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]",
+        );
+        if (!items?.length) {
+          e.preventDefault();
+          return;
+        }
+        const first = items[0],
+          last = items[items.length - 1];
+        if (
+          e.shiftKey &&
+          (document.activeElement === first ||
+            document.activeElement === panelRef.current)
+        ) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -66,11 +87,11 @@ export function KeyFormModal({
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
-      <AnimatedContent className="relative z-10 w-full max-w-lg px-4">
+      <div className="relative z-10 w-full max-w-lg px-4">
         <div
           ref={panelRef}
           tabIndex={-1}
-          className="rounded-2xl border border-black/[.08] bg-white p-6 shadow-xl dark:border-white/[.1] dark:bg-zinc-900 outline-none"
+          className="key-modal-panel max-h-[85dvh] overflow-y-auto rounded-xl border border-black/[.08] bg-white p-6 shadow-xl dark:border-white/[.1] dark:bg-zinc-900 outline-none"
         >
           <div className="mb-4 flex items-center justify-between">
             <h2
@@ -80,14 +101,14 @@ export function KeyFormModal({
               Add a key
             </h2>
             <IconButton
-              icon={<HugeiconsIcon icon={Cancel01Icon} size={16} />}
+              icon={<Glyph name="close" size={19} />}
               ariaLabel="Close"
               onClick={onClose}
             />
           </div>
           {children}
         </div>
-      </AnimatedContent>
+      </div>
     </div>,
     document.body,
   );

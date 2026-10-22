@@ -1,28 +1,28 @@
 "use client";
-
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { revealKey, deleteKey, copyKey } from "@/app/actions/keys";
-import { EditKeyForm } from "@/components/keys/EditKeyForm";
-import { ManageShares } from "@/components/keys/ManageShares";
-import { expiryStatus, formatExpiry } from "@/utils/expiry";
-import { ClickSpark } from "@/components/react-bits/ClickSpark";
-import { SpotlightCard } from "@/components/react-bits/SpotlightCard";
+import { Glyph } from "@/components/ui/Glyph";
+import { KeyProviderIcon } from "./KeyProviderIcon";
+import { positionSpotlight } from "@/components/react-bits/SpotlightCard";
+import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
+import { EditKeyForm } from "./EditKeyForm";
+import { ManageShares } from "./ManageShares";
+import { expiryStatus } from "@/utils/expiry";
 import { IconButton } from "@/components/ui/IconButton";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Copy01Icon,
-  CheckIcon,
-  ViewIcon,
-  ViewOffIcon,
-  PencilEdit01Icon,
-  Share01Icon,
-  Delete02Icon,
-  Loading01Icon,
-} from "@hugeicons/core-free-icons";
 
-const COPY_CLEAR_MS = 15000;
-
+type Props = {
+  keyId: string;
+  name: string;
+  notes: string | null;
+  category: string | null;
+  tags: string[];
+  expiresAt: string | null;
+  lastViewedAt: string | null;
+  maskedValue: string;
+  isOwner: boolean;
+  canEdit: boolean;
+};
 export function KeyRow({
   keyId,
   name,
@@ -33,232 +33,255 @@ export function KeyRow({
   lastViewedAt,
   maskedValue,
   isOwner,
-}: {
-  keyId: string;
-  name: string;
-  notes: string | null;
-  category: string | null;
-  tags: string[];
-  expiresAt: string | null;
-  lastViewedAt: string | null;
-  maskedValue: string;
-  isOwner: boolean;
-}) {
-  const [revealed, setRevealed] = useState<string | null>(null);
-  const [editing, setEditing] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [showShares, setShowShares] = useState(false);
-  const [isRevealing, startReveal] = useTransition();
-  const [isDeleting, startDelete] = useTransition();
-  const [isCopying, startCopy] = useTransition();
+  canEdit,
+}: Props) {
+  const [revealed, setRevealed] = useState<string | null>(null),
+    [editing, setEditing] = useState(false),
+    [copied, setCopied] = useState(false),
+    [sharing, setSharing] = useState(false),
+    [confirming, setConfirming] = useState(false),
+    [error, setError] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
   const router = useRouter();
-
-  const expired = expiryStatus(expiresAt) === "expired";
-
+  const status = expiryStatus(expiresAt);
+  const expired = status === "expired";
+  useEffect(() => {
+    if (!revealed) return;
+    const timer = setTimeout(() => setRevealed(null), 20000);
+    const hide = () => setRevealed(null);
+    window.addEventListener("blur", hide);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("blur", hide);
+    };
+  }, [revealed]);
   useEffect(() => {
     if (!copied) return;
-    const timer = setTimeout(() => {
-      navigator.clipboard.writeText("").catch(() => {});
-      setCopied(false);
-    }, COPY_CLEAR_MS);
+    const timer = setTimeout(() => setCopied(false), 3000);
     return () => clearTimeout(timer);
   }, [copied]);
-
-  function handleReveal() {
-    if (expired) return;
-    if (revealed !== null) {
-      setRevealed(null);
-      return;
-    }
-    startReveal(async () => {
-      setRevealed(await revealKey(keyId));
+  function run(action: () => Promise<void>) {
+    setError(null);
+    startTransition(async () => {
+      try {
+        await action();
+      } catch (e) {
+        setError(
+          e instanceof Error
+            ? e.message
+            : "Something went wrong. Please try again.",
+        );
+      }
     });
   }
-
-  function handleCopy() {
-    if (expired) return;
-    startCopy(async () => {
-      const plaintext = await copyKey(keyId);
-      await navigator.clipboard.writeText(plaintext);
-      setCopied(true);
-    });
-  }
-
-  function handleDelete() {
-    if (!window.confirm(`Delete "${name}"?`)) return;
-    startDelete(async () => {
-      await deleteKey(keyId);
-      router.refresh();
-    });
-  }
-
-  if (editing) {
-    return (
-      <div className="rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
-        <EditKeyForm
-          keyId={keyId}
-          name={name}
-          notes={notes}
-          category={category}
-          tags={tags}
-          expiresAt={expiresAt}
-          onDone={() => setEditing(false)}
-          onCancel={() => setEditing(false)}
-        />
-      </div>
-    );
-  }
-
-  if (showShares) {
-    return (
-      <div className="rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-medium text-zinc-900 dark:text-zinc-50">{name}</p>
+  const date = expiresAt
+    ? new Date(expiresAt).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "No expiration";
+  return (
+    <article
+      className="key-record"
+      aria-label={name}
+      onPointerMove={positionSpotlight}
+    >
+      <div className="key-row">
+        <div className="key-identity">
+          <KeyProviderIcon name={name} category={category} />
+          <div className="key-description">
+            <h2>
+              {name}
+              {!isOwner && (
+                <span className="key-tag">
+                  {canEdit ? "Can edit" : "View only"}
+                </span>
+              )}
+            </h2>
+            <p title={notes ?? undefined}>{notes || "No notes added"}</p>
+            <div className="key-tags">
+              {category && <span>{category}</span>}
+              {tags.map((tag) => (
+                <span key={tag}>#{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="key-value">
+          <code
+            className={revealed ? "is-revealed" : undefined}
+            title={
+              lastViewedAt
+                ? `Last viewed ${new Date(lastViewedAt).toLocaleDateString()}`
+                : undefined
+            }
+          >
+            {revealed ?? maskedValue}
+          </code>
+          <IconButton
+            ariaLabel={`${revealed ? "Hide" : "Reveal"} ${name}`}
+            title={
+              expired
+                ? "Expired keys cannot be revealed"
+                : revealed
+                  ? "Hide key"
+                  : "Reveal for 20 seconds"
+            }
+            icon={<Glyph name={revealed ? "hide" : "view"} size={18} />}
+            disabled={expired || pending}
+            onClick={() =>
+              revealed
+                ? setRevealed(null)
+                : run(async () => setRevealed(await revealKey(keyId)))
+            }
+          />
+        </div>
+        <div className={`key-expiry ${status}`}>
+          <span>
+            {expired
+              ? "Expired"
+              : status === "soon"
+                ? "Expiring soon"
+                : expiresAt
+                  ? "Active"
+                  : "No expiration"}
+          </span>
+          {expiresAt && <time dateTime={expiresAt}>{date}</time>}
+        </div>
+        <div className="key-actions">
           <button
             type="button"
-            onClick={() => setShowShares(false)}
-            className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:border-white/[.15] dark:text-zinc-200 dark:hover:bg-zinc-800"
+            className={`copy-button${copied ? " is-copied" : ""}`}
+            aria-label={`${copied ? "Copied" : "Copy"} ${name}`}
+            disabled={expired || pending}
+            onClick={() =>
+              run(async () => {
+                const value = await copyKey(keyId);
+                await navigator.clipboard.writeText(value);
+                setCopied(true);
+              })
+            }
           >
-            Close
+            <Glyph name={copied ? "check" : "copy"} size={17} />
+            {copied ? "Copied" : "Copy"}
+          </button>
+          {canEdit && (
+            <details className="row-menu">
+              <summary
+                aria-label={`More actions for ${name}`}
+                title="More actions"
+              >
+                <Glyph name="more" />
+              </summary>
+              <div>
+                {canEdit && (
+                  <button
+                    onClick={(e) => {
+                      e.currentTarget
+                        .closest("details")
+                        ?.removeAttribute("open");
+                      setEditing(!editing);
+                      setSharing(false);
+                    }}
+                  >
+                    <Glyph name="edit" size={17} />
+                    Edit key
+                  </button>
+                )}
+                {isOwner && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.currentTarget
+                          .closest("details")
+                          ?.removeAttribute("open");
+                        setSharing(!sharing);
+                        setEditing(false);
+                      }}
+                    >
+                      <Glyph name="share" size={17} />
+                      Manage sharing
+                    </button>
+                    <button
+                      className="danger-text"
+                      onClick={(e) => {
+                        e.currentTarget
+                          .closest("details")
+                          ?.removeAttribute("open");
+                        setConfirming(true);
+                      }}
+                    >
+                      <Glyph name="delete" size={17} />
+                      Delete key
+                    </button>
+                  </>
+                )}
+              </div>
+            </details>
+          )}
+        </div>
+      </div>
+      {error && (
+        <p className="row-error" role="alert">
+          {error}
+        </p>
+      )}
+      {confirming && (
+        <div className="delete-confirm">
+          <p>
+            Delete <strong>{name}</strong>? This cannot be undone.
+          </p>
+          <button
+            className="button-secondary"
+            disabled={pending}
+            onClick={() => setConfirming(false)}
+          >
+            Cancel
+          </button>
+          <button
+            className="button-danger"
+            disabled={pending}
+            onClick={() =>
+              run(async () => {
+                await deleteKey(keyId);
+                router.refresh();
+              })
+            }
+          >
+            {pending ? "Deleting…" : "Delete key"}
           </button>
         </div>
-        <ManageShares keyId={keyId} />
-      </div>
-    );
-  }
-
-  return (
-    <SpotlightCard className="overflow-hidden rounded-xl">
-      <div className="flex items-center justify-between gap-4 rounded-xl border border-black/[.08] px-4 py-3 dark:border-white/[.1]">
-      <div className="min-w-0">
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="font-medium text-zinc-900 dark:text-zinc-50">{name}</p>
-          {!isOwner && (
-            <span className="rounded-md bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700 dark:bg-violet-900 dark:text-violet-300">
-              Shared
-            </span>
-          )}
-          {expiryStatus(expiresAt) === "expired" && (
-            <span className="rounded-md bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900 dark:text-red-300">
-              Expired {formatExpiry(expiresAt)}
-            </span>
-          )}
-          {expiryStatus(expiresAt) === "soon" && (
-            <span className="rounded-md bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-900 dark:text-amber-300">
-              Expires {formatExpiry(expiresAt)}
-            </span>
-          )}
-          {category ? (
-            <span className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">
-              {category}
-            </span>
-          ) : null}
-          {tags.map((tag) => (
-            <span
-              key={tag}
-              className="rounded-md bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300"
-            >
-              #{tag}
-            </span>
-          ))}
-        </div>
-        {notes ? (
-          <p className="mt-0.5 text-sm text-zinc-600 dark:text-zinc-400">
-            {notes}
-          </p>
-        ) : null}
-        <p className="mt-1 overflow-x-auto whitespace-nowrap font-mono text-sm text-zinc-500 dark:text-zinc-400">
-          {revealed ?? maskedValue}
-        </p>
-        {lastViewedAt ? (
-          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Last viewed{" "}
-            {new Date(lastViewedAt).toLocaleDateString(undefined, {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </p>
-        ) : null}
-      </div>
-      <div className="flex flex-shrink-0 items-center gap-2">
-        <ClickSpark
-          sparkColor="rgb(99 102 241)"
-          sparkCount={8}
-          sparkRadius={18}
-          className=""
-        >
-          <IconButton
-            icon={
-              copied ? (
-                <HugeiconsIcon icon={CheckIcon} size={16} />
-              ) : (
-                <HugeiconsIcon icon={Copy01Icon} size={16} />
-              )
-            }
-            ariaLabel={
-              expired
-                ? "Expired"
-                : copied
-                  ? "Copied"
-                  : isCopying
-                    ? "Copying"
-                    : "Copy"
-            }
-            onClick={handleCopy}
-            disabled={expired || isCopying}
+      )}
+      {editing && (
+        <AnimatedContent className="row-expanded" distance={6} speed={0.22}>
+          <h3>Edit key</h3>
+          <EditKeyForm
+            keyId={keyId}
+            name={name}
+            notes={notes}
+            category={category}
+            tags={tags}
+            expiresAt={expiresAt}
+            onDone={() => setEditing(false)}
+            onCancel={() => setEditing(false)}
           />
-        </ClickSpark>
-        <IconButton
-          icon={
-            isRevealing ? (
-              <HugeiconsIcon icon={Loading01Icon} size={16} className="animate-spin" />
-            ) : revealed !== null ? (
-              <HugeiconsIcon icon={ViewOffIcon} size={16} />
-            ) : (
-              <HugeiconsIcon icon={ViewIcon} size={16} />
-            )
-          }
-          ariaLabel={
-            expired
-              ? "Expired"
-              : revealed !== null
-                ? "Hide"
-                : "Reveal"
-          }
-          onClick={handleReveal}
-          disabled={expired || isRevealing}
-        />
-        <IconButton
-          icon={<HugeiconsIcon icon={PencilEdit01Icon} size={16} />}
-          ariaLabel="Edit"
-          onClick={() => setEditing(true)}
-        />
-        {isOwner && (
-          <>
-            <IconButton
-              icon={<HugeiconsIcon icon={Share01Icon} size={16} />}
-              ariaLabel="Share"
-              onClick={() => setShowShares(true)}
-            />
-            <IconButton
-              icon={
-                isDeleting ? (
-                  <HugeiconsIcon icon={Loading01Icon} size={16} className="animate-spin" />
-                ) : (
-                  <HugeiconsIcon icon={Delete02Icon} size={16} />
-                )
-              }
-              ariaLabel="Delete"
-              title="Delete"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              variant="danger"
-            />
-          </>
-        )}
-      </div>
-      </div>
-    </SpotlightCard>
+        </AnimatedContent>
+      )}
+      {sharing && (
+        <AnimatedContent className="row-expanded" distance={6} speed={0.22}>
+          <div className="expanded-heading">
+            <h3>Access to {name}</h3>
+            <button
+              className="button-secondary"
+              onClick={() => setSharing(false)}
+            >
+              Close
+            </button>
+          </div>
+          <ManageShares keyId={keyId} />
+        </AnimatedContent>
+      )}
+    </article>
   );
 }

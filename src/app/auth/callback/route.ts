@@ -10,10 +10,20 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+      let destination = new URL("/", origin);
+      try {
+        destination = new URL(next, origin);
+      } catch {
+        /* Use the workspace for invalid paths. */
+      }
+      return NextResponse.redirect(
+        destination.origin === origin ? destination : new URL("/", origin),
+      );
     }
   }
 
   const error = searchParams.get("error") ?? "auth_failed";
-  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error)}`);
+  return NextResponse.redirect(
+    `${origin}/login?error=${encodeURIComponent(error)}`,
+  );
 }

@@ -10,7 +10,6 @@ import {
 } from "@/app/actions/shares";
 import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
-import { Magnet } from "@/components/react-bits/Magnet";
 
 export function ManageShares({ keyId }: { keyId: string }) {
   const [shares, setShares] = useState<ShareListItem[]>([]);
@@ -75,6 +74,7 @@ export function ManageShares({ keyId }: { keyId: string }) {
         <form action={handleInvite} className="flex gap-2">
           <input
             name="email"
+            aria-label="Recipient email"
             type="email"
             required
             placeholder="user@example.com"
@@ -82,26 +82,27 @@ export function ManageShares({ keyId }: { keyId: string }) {
           />
           <select
             name="permission"
+            aria-label="Recipient permission"
             defaultValue="view"
             className="rounded-lg border border-black/[.08] bg-transparent px-2 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
           >
             <option value="view">View</option>
             <option value="edit">Edit</option>
           </select>
-          <Magnet active={!isPending}>
-            <button
-              type="submit"
-              disabled={isPending}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
-            >
-              {isPending ? "Adding..." : "Add"}
-            </button>
-          </Magnet>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
+          >
+            {isPending ? "Adding..." : "Add"}
+          </button>
         </form>
       </AnimatedContent>
 
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {error}
+        </p>
       )}
 
       {loading ? (
@@ -114,38 +115,39 @@ export function ManageShares({ keyId }: { keyId: string }) {
         <div className="space-y-2">
           <AnimatedList>
             {shares.map((share) => (
-            <div
-              key={share.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-black/[.08] px-3 py-2 dark:border-white/[.1]"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm text-zinc-900 dark:text-zinc-50">
-                  {share.email}
-                </p>
+              <div
+                key={share.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-black/[.08] px-3 py-2 dark:border-white/[.1]"
+              >
+                <div className="min-w-0">
+                  <p className="truncate text-sm text-zinc-900 dark:text-zinc-50">
+                    {share.email}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    value={share.permission}
+                    aria-label={`Permission for ${share.email}`}
+                    onChange={(e) =>
+                      handlePermissionChange(share.id, e.target.value)
+                    }
+                    disabled={isPending}
+                    className="rounded-lg border border-black/[.08] bg-transparent px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+                  >
+                    <option value="view">View</option>
+                    <option value="edit">Edit</option>
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() => handleRevoke(share.id)}
+                    disabled={isPending}
+                    className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-white/[.15] dark:text-red-400 dark:hover:bg-red-950"
+                  >
+                    Revoke
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <select
-                  value={share.permission}
-                  onChange={(e) =>
-                    handlePermissionChange(share.id, e.target.value)
-                  }
-                  disabled={isPending}
-                  className="rounded-lg border border-black/[.08] bg-transparent px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-                >
-                  <option value="view">View</option>
-                  <option value="edit">Edit</option>
-                </select>
-                <button
-                  type="button"
-                  onClick={() => handleRevoke(share.id)}
-                  disabled={isPending}
-                  className="rounded-lg border border-black/[.08] px-3 py-1.5 text-sm font-medium text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-white/[.15] dark:text-red-400 dark:hover:bg-red-950"
-                >
-                  Revoke
-                </button>
-              </div>
-            </div>
-          ))}
+            ))}
           </AnimatedList>
         </div>
       )}

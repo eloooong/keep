@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,17 +16,26 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_VERCEL_URL
       ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-      : "http://localhost:3000"
+      : "http://localhost:3000",
   ),
   title: "Keep",
   description: "Securely store, share, and expiry-manage your API keys.",
   icons: {
-    icon: "/keep_logo.png",
+    icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }],
+    apple: "/brand/apple-touch-icon.png",
   },
+  manifest: "/brand/site.webmanifest",
   openGraph: {
     title: "Keep",
     description: "Securely store, share, and expiry-manage your API keys.",
-    images: ["/keep_logo.png"],
+    images: [
+      {
+        url: "/brand/keep-social.png",
+        width: 1200,
+        height: 630,
+        alt: "Keep — API key vault",
+      },
+    ],
   },
 };
 
@@ -35,19 +43,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} dark h-full antialiased`}
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){var t=localStorage.getItem('theme');if(t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.classList.add('dark')})();`,
-          }}
-        />
-      </head>
-      <body className="min-h-full flex flex-col">
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

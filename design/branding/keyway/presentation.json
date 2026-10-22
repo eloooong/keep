@@ -1,0 +1,52 @@
+{
+  "brand": "Keep",
+  "tagline": "Keep your keys. Keep your focus.",
+  "brief": "A personal API-key vault for developers: encrypted storage, organized credentials, permission-based sharing, expiry reminders and activity history.",
+  "adjectives": [
+    "calm",
+    "orderly",
+    "precise",
+    "approachable"
+  ],
+  "criteria": "Match the existing olive website, remain readable in the sidebar and favicon, and identify credentials kept in a protected space.",
+  "industry": "software",
+  "mockups": [
+    "website",
+    "favicon-tab",
+    "app-icon",
+    "social",
+    "sticker",
+    "badge"
+  ],
+  "nav": [
+    "All keys",
+    "Activity"
+  ],
+  "brand_color": "#526447",
+  "tile_color": "#526447",
+  "greyscale": false,
+  "final": true,
+  "concepts": [
+    {
+      "name": "Keyway",
+      "symbol": "keep-symbol.svg",
+      "lockup": "keep-horizontal.svg",
+      "stacked": "keep-stacked.svg",
+      "symbol_on_tile": "keep-symbol-white.svg",
+      "symbol_on_dark": "keep-symbol-sage.svg",
+      "lockup_on_dark": "keep-horizontal-dark.svg",
+      "idea": "A key-shaped channel cut into a protective enclosure.",
+      "rationale": [
+        "The negative key and solid perimeter unite credentials and safekeeping.",
+        "The website palette and lowercase lettering keep the app recognizable.",
+        "A wider small-size cut preserves the opening in favicons and dark mode."
+      ]
+    }
+  ],
+  "recommendation": "Use the olive mark on warm light surfaces and the sage reversed mark on dark olive surfaces.",
+  "next_steps": [
+    "Use the supplied SVG masters for digital layouts.",
+    "Keep clear space and use the small cut at 16 to 24 px.",
+    "See guidelines.md for the identity specification."
+  ]
+}

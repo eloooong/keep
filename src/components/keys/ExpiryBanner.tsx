@@ -1,16 +1,12 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import {
-  dismissKeyReminder,
-  dismissAllKeyReminders,
-} from "@/app/actions/keys";
+import { dismissKeyReminder, dismissAllKeyReminders } from "@/app/actions/keys";
 import { expiryStatus, formatExpiry } from "@/utils/expiry";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
 import { IconButton } from "@/components/ui/IconButton";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon } from "@hugeicons/core-free-icons";
+import { Glyph } from "@/components/ui/Glyph";
 
 type ExpiryBannerProps = {
   keys: { id: string; name: string; expires_at: string | null }[];
@@ -19,6 +15,7 @@ type ExpiryBannerProps = {
 export function ExpiryBanner({ keys }: ExpiryBannerProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
 
   const flagged = keys
     .filter((k) => {
@@ -35,69 +32,78 @@ export function ExpiryBanner({ keys }: ExpiryBannerProps) {
 
   function handleDismiss(keyId: string) {
     startTransition(async () => {
-      await dismissKeyReminder(keyId);
-      router.refresh();
+      setError(null);
+      try {
+        await dismissKeyReminder(keyId);
+        router.refresh();
+      } catch {
+        setError("Unable to dismiss this reminder. Please try again.");
+      }
     });
   }
 
   function handleDismissAll() {
     startTransition(async () => {
-      await dismissAllKeyReminders(flagged.map((k) => k.id));
-      router.refresh();
+      setError(null);
+      try {
+        await dismissAllKeyReminders(flagged.map((k) => k.id));
+        router.refresh();
+      } catch {
+        setError("Unable to dismiss reminders. Please try again.");
+      }
     });
   }
 
   return (
-    <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-800 dark:bg-amber-950">
+    <div className="expiry-banner mb-6 rounded-xl p-4">
       <div className="mb-2 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200">
-          Key expiry reminders
-        </h3>
+        <h3 className="text-sm font-semibold">Key expiry reminders</h3>
         <button
           type="button"
           onClick={handleDismissAll}
           disabled={isPending}
-          className="text-xs font-medium text-amber-700 underline transition-colors hover:text-amber-900 disabled:opacity-50 dark:text-amber-300 dark:hover:text-amber-100"
+          className="expiry-dismiss text-xs font-medium underline transition-colors disabled:opacity-50"
         >
           Dismiss all
         </button>
       </div>
-      <ul className="space-y-1">
+      {error && <p role="alert">{error}</p>}
+      <div className="space-y-1">
         <AnimatedList>
           {flagged.map((k) => {
             const status = expiryStatus(k.expires_at);
             const label = formatExpiry(k.expires_at);
             return (
-            <li key={k.id} className="flex items-center gap-2 text-sm">
-              <span
-                className={`inline-block h-2 w-2 rounded-full ${
-                  status === "expired" ? "bg-red-500" : "bg-amber-500"
-                }`}
-              />
-              <span
-                className={
-                  status === "expired"
-                    ? "text-red-700 dark:text-red-300"
-                    : "text-amber-700 dark:text-amber-300"
-                }
-              >
-                <span className="font-medium">{k.name}</span>
-                {status === "expired"
-                  ? ` — Expired ${label}`
-                  : ` — Expires ${label}`}
-              </span>
-              <IconButton
-                icon={<HugeiconsIcon icon={Cancel01Icon} size={14} />}
-                ariaLabel={`Dismiss ${k.name}`}
-                onClick={() => handleDismiss(k.id)}
-                disabled={isPending}
-                className="ml-auto flex-shrink-0"
-              />
-            </li>
-          );
+              <div key={k.id} className="flex items-center gap-2 text-sm">
+                <span
+                  className={`inline-block h-2 w-2 rounded-full ${
+                    status === "expired" ? "bg-red-500" : "bg-amber-500"
+                  }`}
+                />
+                <span
+                  className={
+                    status === "expired"
+                      ? "text-red-700 dark:text-red-300"
+                      : "text-amber-700 dark:text-amber-300"
+                  }
+                >
+                  <span className="font-medium">{k.name}</span>
+                  {status === "expired"
+                    ? ` — Expired ${label}`
+                    : ` — Expires ${label}`}
+                </span>
+                <IconButton
+                  icon={<Glyph name="close" size={17} />}
+                  ariaLabel={`Dismiss ${k.name}`}
+                  onClick={() => handleDismiss(k.id)}
+                  disabled={isPending}
+                  className="ml-auto flex-shrink-0"
+                />
+              </div>
+            );
           })}
         </AnimatedList>
-      </ul>
+      </div>
     </div>
   );
 }

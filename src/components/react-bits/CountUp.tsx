@@ -1,10 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+// Count-mode adaptation of React Bits CountUp by David Haz.
+// Source and license: ./README.md and ./LICENSE.react-bits.md.
+import { animate, cubicBezier } from "motion/react";
+import { useEffect, useRef } from "react";
 
 export function CountUp({
   end,
-  duration = 1200,
+  duration = 600,
   className = "",
   startAs = 0,
 }: {
@@ -13,23 +16,44 @@ export function CountUp({
   className?: string;
   startAs?: number;
 }) {
-  const [value, setValue] = useState(startAs);
+  const ref = useRef<HTMLSpanElement>(null);
+  const previous = useRef(startAs);
 
   useEffect(() => {
-    const startTime = performance.now();
-
-    function step(now: number) {
-      const progress = Math.min((now - startTime) / duration, 1);
-      const eased = 1 - Math.pow(1 - progress, 3);
-      setValue(Math.round(startAs + (end - startAs) * eased));
-      if (progress < 1) {
-        requestAnimationFrame(step);
-      }
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const render = (value: number) => {
+      previous.current = value;
+      if (ref.current) ref.current.textContent = String(Math.round(value));
+    };
+    if (media.matches || duration <= 0) {
+      render(end);
+      return;
     }
+    const controls = animate(previous.current, end, {
+      duration: duration / 1000,
+      ease: cubicBezier(0.33, 1, 0.68, 1),
+      onUpdate: render,
+      onComplete: () => render(end),
+    });
+    const finish = () => {
+      if (media.matches) {
+        controls.stop();
+        render(end);
+      }
+    };
+    media.addEventListener("change", finish);
+    return () => {
+      controls.stop();
+      media.removeEventListener("change", finish);
+    };
+  }, [end, duration]);
 
-    const raf = requestAnimationFrame(step);
-    return () => cancelAnimationFrame(raf);
-  }, [end, duration, startAs]);
-
-  return <span className={className}>{value}</span>;
+  return (
+    <span className={className}>
+      <span aria-hidden="true" ref={ref}>
+        {end}
+      </span>
+      <span className="sr-only">{end}</span>
+    </span>
+  );
 }

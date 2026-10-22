@@ -10,7 +10,10 @@ export type ShareListItem = {
   email: string;
 };
 
-async function assertKeyOwner(supabase: Awaited<ReturnType<typeof createClient>>, keyId: string) {
+async function assertKeyOwner(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  keyId: string,
+) {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -23,7 +26,8 @@ async function assertKeyOwner(supabase: Awaited<ReturnType<typeof createClient>>
     .limit(1);
 
   if (error) throw new Error(error.message);
-  if (!rows?.[0] || rows[0].user_id !== user.id) throw new Error("Key not found");
+  if (!rows?.[0] || rows[0].user_id !== user.id)
+    throw new Error("Key not found");
 
   return user;
 }
@@ -32,46 +36,47 @@ export async function createShare(keyId: string, formData: FormData) {
   const supabase = await createClient();
   const user = await assertKeyOwner(supabase, keyId);
 
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = String(formData.get("email") ?? "")
+    .trim()
+    .toLowerCase();
   const permission = String(formData.get("permission") ?? "view");
 
   if (!email) throw new Error("Email is required");
-  if (permission !== "view" && permission !== "edit") throw new Error("Invalid permission");
+  if (permission !== "view" && permission !== "edit")
+    throw new Error("Invalid permission");
 
-  const { data: sharee, error: lookupError } = await supabase
-    .from("profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
+  const { data: recipientId, error: lookupError } = await supabase.rpc(
+    "find_share_recipient",
+    { p_key_id: keyId, p_email: email },
+  );
 
   if (lookupError) throw new Error(lookupError.message);
-  if (!sharee) throw new Error("No user with that email");
-  if (sharee.id === user.id) throw new Error("Cannot share a key with yourself");
+  if (!recipientId) throw new Error("No user with that email");
+  if (recipientId === user.id)
+    throw new Error("Cannot share a key with yourself");
 
   const { error: upsertError } = await supabase.from("key_shares").upsert(
     {
       key_id: keyId,
       owner_id: user.id,
-      user_id: sharee.id,
+      user_id: recipientId,
       permission,
       updated_at: new Date().toISOString(),
     },
-    { onConflict: "key_id,user_id" }
+    { onConflict: "key_id,user_id" },
   );
 
   if (upsertError) throw new Error(upsertError.message);
 
-  await supabase.from("audit_log").insert({
-    key_id: keyId,
-    actor_id: user.id,
-    action: "share",
-  });
-
   revalidatePath("/");
 }
 
-export async function updateSharePermission(shareId: string, permission: string) {
-  if (permission !== "view" && permission !== "edit") throw new Error("Invalid permission");
+export async function updateSharePermission(
+  shareId: string,
+  permission: string,
+) {
+  if (permission !== "view" && permission !== "edit")
+    throw new Error("Invalid permission");
 
   const supabase = await createClient();
   const {
@@ -103,12 +108,6 @@ export async function updateSharePermission(shareId: string, permission: string)
     .eq("id", shareId);
 
   if (updateError) throw new Error(updateError.message);
-
-  await supabase.from("audit_log").insert({
-    key_id: share.key_id,
-    actor_id: user.id,
-    action: "share",
-  });
 
   revalidatePath("/");
 }
@@ -145,12 +144,6 @@ export async function revokeShare(shareId: string) {
 
   if (deleteError) throw new Error(deleteError.message);
 
-  await supabase.from("audit_log").insert({
-    key_id: share.key_id,
-    actor_id: user.id,
-    action: "revoke",
-  });
-
   revalidatePath("/");
 }
 
@@ -160,19 +153,30 @@ export async function listShares(keyId: string): Promise<ShareListItem[]> {
 
   const { data, error } = await supabase
     .from("key_shares")
-    .select("id, permission, created_at, profiles!inner(email)")
+    .select("id, user_id, permission, created_at")
     .eq("key_id", keyId)
     .order("created_at", { ascending: true });
 
   if (error) throw new Error(error.message);
 
-  return (data ?? []).map((row) => {
-    const profileRows = row.profiles as { email: string }[] | undefined;
+  if (!data?.length) return [];
+  const { data: profiles, error: profileError } = await supabase
+    .from("profiles")
+    .select("id, email")
+    .in(
+      "id",
+      data.map((row) => row.user_id),
+    );
+  if (profileError) throw new Error("Unable to load share recipients");
+  const emails = new Map(
+    (profiles ?? []).map((profile) => [profile.id, profile.email]),
+  );
+  return data.map((row) => {
     return {
       id: row.id,
       permission: row.permission,
       created_at: row.created_at,
-      email: profileRows?.[0]?.email ?? "",
+      email: emails.get(row.user_id) ?? "Unknown recipient",
     };
   });
 }

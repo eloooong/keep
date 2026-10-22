@@ -1,5 +1,6 @@
 "use client";
-
+import { useEffect, useRef } from "react";
+import { Glyph } from "@/components/ui/Glyph";
 export function KeysToolbar({
   search,
   onSearch,
@@ -19,47 +20,56 @@ export function KeysToolbar({
   categories: string[];
   tags: string[];
 }) {
+  const ref = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    function keydown(event: KeyboardEvent) {
+      const target = event.target as HTMLElement;
+      if (
+        event.key === "/" &&
+        !event.metaKey &&
+        !event.ctrlKey &&
+        !event.altKey &&
+        !target.closest("input,textarea,select,[contenteditable=true]")
+      ) {
+        event.preventDefault();
+        ref.current?.focus();
+      }
+    }
+    document.addEventListener("keydown", keydown);
+    return () => document.removeEventListener("keydown", keydown);
+  }, []);
   return (
-    <div className="space-y-3">
-      <input
-        type="text"
-        value={search}
-        onChange={(e) => onSearch(e.target.value)}
-        placeholder="Search by name, notes, category, or tag..."
-        className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-      />
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Category
-          <select
-            value={category}
-            onChange={(e) => onCategory(e.target.value)}
-            className="rounded-lg border border-black/[.08] bg-transparent px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-          >
-            <option value="">All categories</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Tag
-          <select
-            value={tag}
-            onChange={(e) => onTag(e.target.value)}
-            className="rounded-lg border border-black/[.08] bg-transparent px-2 py-1.5 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-          >
-            <option value="">All tags</option>
-            {tags.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+    <div className="keys-toolbar">
+      <label className="search-field">
+        <Glyph name="search" size={17} />
+        <span className="sr-only">Search keys</span>
+        <input
+          ref={ref}
+          type="search"
+          value={search}
+          onChange={(e) => onSearch(e.target.value)}
+          placeholder="Search keys, notes, or tags…"
+        />
+        <kbd>/</kbd>
+      </label>
+      <label className="filter-field">
+        <span className="sr-only">Category</span>
+        <select value={category} onChange={(e) => onCategory(e.target.value)}>
+          <option value="">All categories</option>
+          {categories.map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
+      </label>
+      <label className="filter-field">
+        <span className="sr-only">Tag</span>
+        <select value={tag} onChange={(e) => onTag(e.target.value)}>
+          <option value="">All tags</option>
+          {tags.map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
+      </label>
     </div>
   );
 }

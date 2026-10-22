@@ -1,9 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { updateKey } from "@/app/actions/keys";
-import { AnimatedContent } from "@/components/react-bits/AnimatedContent";
 
 export function EditKeyForm({
   keyId,
@@ -26,122 +25,137 @@ export function EditKeyForm({
 }) {
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
   return (
     <form
       className="space-y-3"
       action={(formData) => {
         startTransition(async () => {
-          await updateKey(keyId, formData);
-          router.refresh();
-          onDone();
+          setError(null);
+          try {
+            await updateKey(keyId, formData);
+            router.refresh();
+            onDone();
+          } catch (error) {
+            setError(
+              error instanceof Error
+                ? error.message
+                : "Unable to save this key. Please try again.",
+            );
+          }
         });
       }}
     >
-      <AnimatedContent>
-        <div className="space-y-3">
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-name`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Name
-        </label>
-        <input
-          id={`edit-${keyId}-name`}
-          name="name"
-          type="text"
-          required
-          defaultValue={name}
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
+      {error && (
+        <p role="alert" className="row-error">
+          {error}
+        </p>
+      )}
+
+      <div className="space-y-3">
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-name`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Name
+          </label>
+          <input
+            id={`edit-${keyId}-name`}
+            name="name"
+            type="text"
+            required
+            defaultValue={name}
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-value`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Value{" "}
+            <span className="text-zinc-400 dark:text-zinc-500">
+              (leave blank to keep current)
+            </span>
+          </label>
+          <input
+            id={`edit-${keyId}-value`}
+            name="value"
+            type="password"
+            placeholder="sk-..."
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-notes`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Notes
+          </label>
+          <textarea
+            id={`edit-${keyId}-notes`}
+            name="notes"
+            rows={2}
+            defaultValue={notes ?? ""}
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-category`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Category
+          </label>
+          <input
+            id={`edit-${keyId}-category`}
+            name="category"
+            type="text"
+            defaultValue={category ?? ""}
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-tags`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Tags{" "}
+            <span className="text-zinc-400 dark:text-zinc-500">
+              (comma-separated)
+            </span>
+          </label>
+          <input
+            id={`edit-${keyId}-tags`}
+            name="tags"
+            type="text"
+            defaultValue={tags.join(", ")}
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor={`edit-${keyId}-expires`}
+            className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            Expires{" "}
+            <span className="text-zinc-400 dark:text-zinc-500">
+              (leave blank to clear)
+            </span>
+          </label>
+          <input
+            id={`edit-${keyId}-expires`}
+            name="expires_at"
+            type="date"
+            defaultValue={expiresAt ? expiresAt.slice(0, 10) : ""}
+            className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
+          />
+        </div>
       </div>
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-value`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Value{" "}
-          <span className="text-zinc-400 dark:text-zinc-500">
-            (leave blank to keep current)
-          </span>
-        </label>
-        <input
-          id={`edit-${keyId}-value`}
-          name="value"
-          type="password"
-          placeholder="sk-..."
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-notes`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Notes
-        </label>
-        <textarea
-          id={`edit-${keyId}-notes`}
-          name="notes"
-          rows={2}
-          defaultValue={notes ?? ""}
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-category`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Category
-        </label>
-        <input
-          id={`edit-${keyId}-category`}
-          name="category"
-          type="text"
-          defaultValue={category ?? ""}
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-tags`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Tags{" "}
-          <span className="text-zinc-400 dark:text-zinc-500">
-            (comma-separated)
-          </span>
-        </label>
-        <input
-          id={`edit-${keyId}-tags`}
-          name="tags"
-          type="text"
-          defaultValue={tags.join(", ")}
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-      </div>
-      <div>
-        <label
-          htmlFor={`edit-${keyId}-expires`}
-          className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-        >
-          Expires{" "}
-          <span className="text-zinc-400 dark:text-zinc-500">
-            (leave blank to clear)
-          </span>
-        </label>
-        <input
-          id={`edit-${keyId}-expires`}
-          name="expires_at"
-          type="date"
-          defaultValue={expiresAt ? expiresAt.slice(0, 10) : ""}
-          className="w-full rounded-lg border border-black/[.08] px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 dark:border-white/[.15] dark:bg-zinc-900 dark:text-zinc-50"
-        />
-      </div>
-      </div>
-      </AnimatedContent>
+
       <div className="flex gap-2">
         <button
           type="submit"

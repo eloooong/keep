@@ -1,0 +1,84 @@
+# Local Keep services use separate ports from other projects.
+project_id = "keep"
+
+[api]
+enabled = true
+port = 55321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 55322
+shadow_port = 55320
+major_version = 17
+health_timeout = "2m"
+
+[db.pooler]
+enabled = false
+port = 55329
+
+[db.seed]
+enabled = false
+
+[realtime]
+enabled = false
+
+[studio]
+enabled = true
+port = 55323
+api_url = "http://127.0.0.1"
+
+[local_smtp]
+enabled = true
+port = 55324
+
+[storage]
+enabled = false
+
+[storage.s3_protocol]
+enabled = false
+
+[storage.vector]
+enabled = false
+
+[auth]
+enabled = true
+site_url = "http://127.0.0.1:3000"
+additional_redirect_urls = ["http://127.0.0.1:3000/auth/callback", "http://127.0.0.1:3000/auth/callback?next=/auth/reset-password", "http://localhost:3000/auth/callback", "http://localhost:3000/auth/callback?next=/auth/reset-password"]
+enable_signup = true
+minimum_password_length = 12
+
+[auth.email]
+enable_signup = true
+enable_confirmations = false
+secure_password_change = true
+max_frequency = "1s"
+
+# Enable a provider only after adding its real credentials to .env.local.
+# npm run backend:start loads that file for the CLI. Never paste secrets here.
+[auth.external.google]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+skip_nonce_check = false
+
+[auth.external.github]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GITHUB_SECRET)"
+
+# Apple requires a registered HTTPS callback; loopback HTTP will not work.
+[auth.external.apple]
+enabled = false
+client_id = "env(SUPABASE_AUTH_EXTERNAL_APPLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_APPLE_SECRET)"
+skip_nonce_check = false
+
+[edge_runtime]
+enabled = false
+inspector_port = 58083
+
+[analytics]
+enabled = false
+port = 55327

@@ -3,11 +3,12 @@
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import { useState } from "react";
-import { SplitText } from "@/components/react-bits/SplitText";
-import { GradientWaves } from "@/components/react-bits/GradientWaves";
-import { ShinyText } from "@/components/react-bits/ShinyText";
+import { useRouter } from "next/navigation";
+import { AuthLayout } from "@/components/AuthLayout";
+import { SocialSignIn } from "@/components/auth/SocialSignIn";
 
 export default function SignupPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -20,37 +21,42 @@ export default function SignupPage() {
     setError(null);
     setMessage(null);
 
-    const supabase = createClient();
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    try {
+      const supabase = createClient();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      });
 
-    setLoading(false);
+      if (error) {
+        setError(error.message);
+        return;
+      }
 
-    if (error) {
-      setError(error.message);
-      return;
-    }
-
-    if (data.session) {
-      setMessage("Account created. You are now signed in.");
-    } else {
-      setMessage("Check your email to confirm your account.");
+      if (data.session) {
+        router.push("/");
+        router.refresh();
+      } else {
+        setMessage("Check your email to confirm your account.");
+      }
+    } catch {
+      setError(
+        "Unable to create your account. Check your connection and try again.",
+      );
+    } finally {
+      setLoading(false);
     }
   }
 
   return (
-    <main className="relative flex flex-1 items-center justify-center overflow-hidden px-4">
-      <div className="absolute inset-0">
-        <GradientWaves className="" />
-      </div>
+    <AuthLayout>
       <div className="relative z-10 w-full max-w-sm rounded-2xl border border-black/[.08] bg-white p-8 shadow-sm dark:border-white/[.1] dark:bg-zinc-900">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          <SplitText text="Create account" delay={100} stagger={0.04} />
+          Make room for your keys.
         </h1>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
-          <ShinyText text="Start saving your API keys securely." />
+          Create your personal Keep workspace.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
@@ -63,6 +69,7 @@ export default function SignupPage() {
             </label>
             <input
               id="email"
+              autoComplete="email"
               type="email"
               required
               value={email}
@@ -80,9 +87,11 @@ export default function SignupPage() {
             </label>
             <input
               id="password"
+              autoComplete="new-password"
               type="password"
               required
-              minLength={6}
+              minLength={12}
+              maxLength={128}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
@@ -90,7 +99,9 @@ export default function SignupPage() {
           </div>
 
           {error && (
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+              {error}
+            </p>
           )}
           {message && (
             <p className="text-sm text-emerald-600 dark:text-emerald-400">
@@ -103,9 +114,11 @@ export default function SignupPage() {
             disabled={loading}
             className="mt-2 rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800 disabled:opacity-50 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
-            {loading ? "Creating account…" : "Create account"}
+            {loading ? "Creating accountâ€¦" : "Create account"}
           </button>
         </form>
+
+        <SocialSignIn />
 
         <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
           Already have an account?{" "}
@@ -117,6 +130,6 @@ export default function SignupPage() {
           </Link>
         </p>
       </div>
-    </main>
+    </AuthLayout>
   );
 }

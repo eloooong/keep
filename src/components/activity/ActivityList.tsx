@@ -1,56 +1,101 @@
 "use client";
-
+import { useState, useSyncExternalStore } from "react";
 import type { ActivityRow } from "@/app/actions/activity";
+import { Glyph, type GlyphName } from "@/components/ui/Glyph";
 import { AnimatedList } from "@/components/react-bits/AnimatedList";
-
-const ACTION_LABELS: Record<string, string> = {
-  view: "View",
-  copy: "Copy",
-  edit: "Edit",
-  share: "Share",
-  revoke: "Revoke",
+const labels: Record<string, string> = {
+  create: "Created",
+  delete: "Deleted",
+  view: "Viewed",
+  copy: "Copied",
+  edit: "Edited",
+  share: "Shared",
+  revoke: "Access revoked",
 };
-
-const ACTION_COLORS: Record<string, string> = {
-  view: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-300",
-  copy: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300",
-  edit: "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300",
-  share: "bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300",
-  revoke: "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300",
+const actionIcons: Record<string, GlyphName> = {
+  create: "plus",
+  delete: "delete",
+  view: "view",
+  copy: "copy",
+  edit: "edit",
+  share: "share",
+  revoke: "unlink",
 };
+const subscribeToHydration = () => () => {};
 
 export function ActivityList({ activity }: { activity: ActivityRow[] }) {
+  const [filter, setFilter] = useState("");
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
+  const filtered = activity.filter((item) => !filter || item.action === filter);
   return (
-    <div className="space-y-2">
-      <AnimatedList>
-        {activity.map((entry) => {
-          const label = ACTION_LABELS[entry.action] ?? entry.action;
-          const color = ACTION_COLORS[entry.action] ?? ACTION_COLORS.view;
-          const datetime = new Date(entry.created_at).toLocaleString();
-          return (
-            <div
-              key={entry.id}
-              className="flex items-center justify-between gap-3 rounded-lg border border-black/[.08] px-3 py-2 dark:border-white/[.1]"
-            >
-              <div className="flex min-w-0 items-center gap-2">
-                <span
-                  className={`shrink-0 rounded-md px-2 py-0.5 text-xs font-medium ${color}`}
-                >
-                  {label}
+    <section>
+      <div className="activity-toolbar">
+        <p>Latest {activity.length} events</p>
+        <label className="filter-field">
+          <span className="sr-only">Filter activity</span>
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="">All actions</option>
+            {Object.entries(labels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      {filtered.length ? (
+        <div className="activity-table">
+          <div className="activity-table-heading">
+            <span>Event</span>
+            <span>Key</span>
+            <span>When</span>
+          </div>
+          <AnimatedList>
+            {filtered.map((entry) => (
+              <div className="activity-row" key={entry.id}>
+                <span className="activity-event">
+                  <Glyph
+                    name={actionIcons[entry.action] ?? "activity"}
+                    size={19}
+                  />
+                  {labels[entry.action] ?? entry.action}
                 </span>
-                <p className="truncate text-sm text-zinc-900 dark:text-zinc-50">
-                  <span className="text-zinc-500 dark:text-zinc-400">
-                    {entry.keyName ?? "deleted key"}
-                  </span>
-                </p>
+                <span>
+                  {entry.keyName ?? "Deleted key"}
+                  <small className="activity-actor">
+                    {entry.actorEmail ?? "System"}
+                  </small>
+                </span>
+                <time dateTime={entry.created_at}>
+                  {new Date(entry.created_at).toLocaleString("en-US", {
+                    // Match the server during hydration, then use local time.
+                    timeZone: hydrated ? undefined : "UTC",
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </time>
               </div>
-              <p className="shrink-0 text-sm text-zinc-500 dark:text-zinc-400">
-                {datetime}
-              </p>
-            </div>
-          );
-        })}
-      </AnimatedList>
-    </div>
+            ))}
+          </AnimatedList>
+        </div>
+      ) : (
+        <div className="collection-empty">
+          <Glyph name="activity" size={30} />
+          <h2>No activity to show.</h2>
+          <p>
+            {filter
+              ? "Try another action filter."
+              : "Key activity will appear here as you use your workspace."}
+          </p>
+        </div>
+      )}
+    </section>
   );
 }
