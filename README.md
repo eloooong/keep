@@ -1,31 +1,65 @@
-# Keep
+<div align="center">
+  <img src="public/brand/icon-192.png" alt="Keep logo" width="72" height="72" />
 
-An API key vault for organizing credentials, managing shared access, and tracking activity across your projects.
+  <h1>Keep</h1>
+  <p><strong>Your keys. One place.</strong></p>
+  <p>An API key vault for organizing credentials, sharing access, and tracking activity.</p>
 
-[Live application](https://keep-umber-eta.vercel.app) · [Development guide](docs/development.md) · [Deployment guide](docs/deployment.md)
+  <p>
+    <img src="https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&amp;logoColor=white" alt="Next.js 16" />
+    <img src="https://img.shields.io/badge/React-19-149ECA?logo=react&amp;logoColor=white" alt="React 19" />
+    <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&amp;logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Supabase-3FCF8E?logo=supabase&amp;logoColor=white" alt="Supabase" />
+    <a href="https://github.com/eloooong/keep/actions/workflows/checks.yml"><img src="https://github.com/eloooong/keep/actions/workflows/checks.yml/badge.svg" alt="Checks" /></a>
+  </p>
 
-[![Checks](https://github.com/eloooong/keep/actions/workflows/checks.yml/badge.svg)](https://github.com/eloooong/keep/actions/workflows/checks.yml)
+  <p>
+    <a href="https://keep-umber-eta.vercel.app"><strong>Open Keep ↗</strong></a> ·
+    <a href="#features">Features</a> ·
+    <a href="#getting-started">Getting started</a> ·
+    <a href="#configuration">Configuration</a> ·
+    <a href="#documentation">Documentation</a>
+  </p>
+</div>
+
+## Preview
 
 ![Keep workspace showing the key collection, search controls, and expiration tracking](docs/images/keep-vault.png)
 
-## Overview
+_The current workspace with sample credentials. Key values remain masked until revealed._
 
-Keep brings API credentials into one workspace with searchable metadata, explicit sharing permissions, and an activity history. It is built with Next.js, React, TypeScript, and Supabase, with a responsive dark interface.
+## Features
 
-| Capability          | Details                                                                  |
-| ------------------- | ------------------------------------------------------------------------ |
-| Credential storage  | Server-side AES-256-GCM encryption for stored key values                 |
-| Organization        | Search by name, notes, or tags; filter by category and tag               |
-| Shared access       | Grant view or edit permissions and revoke access                         |
-| Activity history    | Record key changes and access, retaining history after deletion          |
-| Expiration tracking | Identify upcoming expirations and optionally send email reminders        |
-| Authentication      | Email/password, Google, and GitHub through configured Supabase providers |
+| Area               | What it provides                                                          |
+| ------------------ | ------------------------------------------------------------------------- |
+| **Key vault**      | Store API credentials with server-side AES-256-GCM encryption.            |
+| **Organization**   | Search by name, notes, or tags, with category and tag filters.            |
+| **Sharing**        | Grant view or edit permissions and revoke access when needed.             |
+| **Activity**       | Track key changes and access, with history retained after deletion.       |
+| **Expiration**     | Surface upcoming expirations and optionally send email reminders.         |
+| **Authentication** | Email/password, Google, and GitHub through configured Supabase providers. |
+| **Interface**      | Responsive dark layouts, keyboard controls, and reduced-motion support.   |
 
-## Quick start
+## Technology
 
-**Requirements:** Node.js 24 and npm. Docker is needed only for the local Supabase stack.
+| Layer                       | Stack                                                   |
+| --------------------------- | ------------------------------------------------------- |
+| Application                 | Next.js App Router, React, TypeScript                   |
+| Interface                   | Tailwind CSS, Hugeicons, Motion, React Bits adaptations |
+| Database and authentication | Supabase PostgreSQL, Auth, row-level security           |
+| Encryption                  | Node.js crypto, AES-256-GCM                             |
+| Email                       | Resend, with scheduled expiry reminders                 |
+| Testing                     | Node.js test runner, PGlite, Python Playwright          |
+| Hosting                     | Vercel                                                  |
 
-### 1. Install dependencies
+## Getting started
+
+### Requirements
+
+- Node.js **24** and npm
+- Docker only if running the local Supabase stack
+
+### 1. Clone and install
 
 ```sh
 git clone https://github.com/eloooong/keep.git
@@ -33,21 +67,21 @@ cd keep
 npm ci
 ```
 
-### 2. Configure the environment
-
-Copy `.env.example` to `.env.local`:
+### 2. Configure your environment
 
 ```sh
 cp .env.example .env.local
 ```
 
-To explore the application without configuring external services, set:
+On PowerShell, use `Copy-Item .env.example .env.local`.
+
+To explore the application without external services, set this in `.env.local`:
 
 ```dotenv
 NEXT_PUBLIC_DEMO_MODE=true
 ```
 
-This mode uses shared, in-memory sample data that may reset on restart or redeployment.
+Sample data is shared in process memory and may reset on restart or redeployment. For persistent accounts and credentials, follow the [local development guide](docs/development.md).
 
 ### 3. Start the application
 
@@ -57,29 +91,36 @@ npm run dev
 
 Open [localhost:3000](http://localhost:3000).
 
-For persistent accounts and credentials, use the [local development guide](docs/development.md) to configure Supabase and the encryption key. Demo mode must be enabled explicitly; missing configuration never bypasses authentication.
+## Configuration
 
-## Security model
+The complete variable list is in [`.env.example`](.env.example). For a persistent vault, set demo mode to `false` and configure the following:
 
-Key values are encrypted on the server before storage. Access is enforced through server-side authorization and PostgreSQL row-level security. Owners manage sharing; recipients receive view or edit permissions.
+| Variable                        | Purpose                                                |
+| ------------------------------- | ------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Supabase project URL                                   |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public project key                                     |
+| `ENCRYPTION_KEY`                | Server-only encryption key: 64 hexadecimal characters  |
+| `NEXT_PUBLIC_AUTH_PROVIDERS`    | Configured OAuth provider IDs, such as `google,github` |
 
-Encryption is **at rest**, not end-to-end: the application server can decrypt values for authorized requests. Keep the server encryption key private and backed up. Replacing or losing it makes existing encrypted values unreadable.
+Missing configuration never enables demo mode automatically. Reminder delivery requires additional server-side settings; see [deployment](docs/deployment.md#expiry-reminders).
 
-See the [architecture guide](docs/architecture.md) for the data flow, access rules, and service boundaries.
+### Encryption and access
+
+Key values are encrypted on the server before storage. Server-side authorization and PostgreSQL row-level security enforce access; owners control sharing and recipients receive view or edit permissions.
+
+This is encryption at rest, not end-to-end encryption. The application server can decrypt values for authorized requests. Keep the encryption key private, stable across deployments, and securely backed up: losing or replacing it makes existing ciphertext unreadable.
 
 ## Development
 
-| Command                | Purpose                                                           |
-| ---------------------- | ----------------------------------------------------------------- |
-| `npm run dev`          | Start the development server                                      |
-| `npm run check`        | Run ESLint, generate route types, check TypeScript, and run tests |
-| `npm run format:check` | Verify source and documentation formatting                        |
-| `npm run build`        | Create a production build                                         |
-| `npm start`            | Serve the production build                                        |
+| Command                | Purpose                                                     |
+| ---------------------- | ----------------------------------------------------------- |
+| `npm run dev`          | Start the development server                                |
+| `npm run check`        | Lint, generate route types, check TypeScript, and run tests |
+| `npm run format:check` | Verify source and documentation formatting                  |
+| `npm run build`        | Create a production build                                   |
+| `npm start`            | Serve the production build                                  |
 
-Tests use Node's test runner and PGlite to exercise database permissions, ownership constraints, audit behavior, encryption, and reminder delivery logic without an external database. GitHub Actions runs formatting, lint, type checks, tests, and a demo-mode production build on every push and pull request.
-
-Browser test setup and integration checks are documented in the [development guide](docs/development.md).
+GitHub Actions runs formatting, lint, type checks, tests, and a demo-mode production build on every push and pull request. Database tests use PGlite and do not require an external database. Browser and integration checks have separate setup in the [development guide](docs/development.md#automated-tests).
 
 ## Project structure
 
@@ -96,10 +137,13 @@ docs/            Development, architecture, and deployment guides
 
 ## Documentation
 
-| Guide                                                        | Contents                                            |
-| ------------------------------------------------------------ | --------------------------------------------------- |
-| [Development](docs/development.md)                           | Local setup, environment configuration, and testing |
-| [Architecture](docs/architecture.md)                         | Data flow, permissions, and service boundaries      |
-| [Deployment](docs/deployment.md)                             | Hosting, database upgrades, and expiry reminders    |
-| [Social sign-in](docs/social-sign-in.md)                     | OAuth provider configuration and callbacks          |
-| [Animation attribution](src/components/react-bits/README.md) | React Bits adaptations and third-party licenses     |
+- [Development](docs/development.md) — local setup, environment configuration, and testing
+- [Architecture](docs/architecture.md) — data flow, permissions, and service boundaries
+- [Deployment](docs/deployment.md) — hosting, database upgrades, and expiry reminders
+- [Social sign-in](docs/social-sign-in.md) — OAuth provider configuration and callbacks
+
+## Credits
+
+Interface components include adaptations from [React Bits](https://reactbits.dev/) and icons from [Hugeicons](https://hugeicons.com/). Third-party code retains its respective terms; see the [animation attribution and licenses](src/components/react-bits/README.md).
+
+Maintained by [eloooong](https://github.com/eloooong).
